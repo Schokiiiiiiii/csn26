@@ -84,7 +84,7 @@ begin
                           na_i when "01",
                           (others => '-') when "10",
                           (0 => '1', others => '0') when "11",
-                          'X'  when others;
+                          (others => 'X') when others;
                           
   -- right operand possible inversion
   add_right_s <= (not add_right_before_s) when opcode_i(2) = '1' else
@@ -92,14 +92,13 @@ begin
                  
   -- addition
   adder: addn_full
-    generic map (N => N);
+    generic map (N => N)
     port map (nbr_a_i => add_left_s,
               nbr_b_i => add_right_s,
               cin_i   => opcode_i(2),
               sum_o   => add_res_s,
               cout_o  => add_cn_s,
               ovr_o   => add_ovr_s);
-  end component;
 
   ------------------------------------------------------------------
   -- Logic
@@ -110,7 +109,7 @@ begin
   ------------------------------------------------------------------
   -- Multiplication
   
-  mult_res_s <= na_i(N-2 downto 0) & 0;
+  mult_res_s <= na_i(N-2 downto 0) & "0";
   
   ------------------------------------------------------------------
   -- Result
@@ -125,7 +124,7 @@ begin
   -- Flags
 
   -- zero
-  z_o <= '1' when unsigned(res_s) = (others => '0') else
+  z_o <= '1' when unsigned(res_s) = 0 else
          '0';
   
   -- excess unsigned

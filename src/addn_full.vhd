@@ -36,7 +36,7 @@ entity addn_full is
         ovr_o   : out std_logic  );
 end addn_full;
 
-architecture struct of addn_full is
+architecture flot_don of addn_full is
 
   -- carry n-1 and n
   signal cn_m1_s : std_logic;
@@ -81,4 +81,4 @@ begin
   ovr_o  <= cn_m1_s xor cn_s;
   cout_o <= cn_s;           
 
-end struct;
+end flot_don;
