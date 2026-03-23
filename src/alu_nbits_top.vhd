@@ -105,7 +105,7 @@ begin
   ------------------------------------------------------------------
   -- Logic
   
-  sel_logic_s <= '1' when opcode(1 downto 0) = "10" else
+  sel_logic_s <= '1' when opcode_i(1 downto 0) = "10" else
                  '0';
 
   logic_res_s <= (na_i or nb_i) when opcode_i(2) = '1' else
