@@ -39,14 +39,14 @@ end alu_nbits_top ;
 architecture struct of alu_nbits_top is
 
   -- Intern signals
-
+  
   -- adder signals
+  signal sel_p_s : std_logic;
   signal add_left_s, add_right_s, add_right_before_s : std_logic_vector(N-1 downto 0);
   signal add_res_s : std_logic_vector(N-1 downto 0);
-  signal add_cn_s  : std_logic;
-  signal add_ovr_s : std_logic;
   
   -- logic signals
+  signal sel_logic_s : std_logic;
   signal logic_res_s : std_logic_vector(N-1 downto 0);
   
   -- result signals
@@ -68,12 +68,16 @@ architecture struct of alu_nbits_top is
               entity work.addn_full(flot_don);
 
 begin
-
+  
   ------------------------------------------------------------------
   -- Adder
   
+  -- selection for p (left)
+  sel_p_s <= '1' when opcode_i(2 downto 0) = "101" else
+             '0';
+  
   -- left operand
-  add_left_s <= nb_i when opcode_i(1 downto 0) = "10" else
+  add_left_s <= nb_i when sel_p_s = '1' else
                 na_i;
   
   -- right operand choice
@@ -95,11 +99,14 @@ begin
               nbr_b_i => add_right_s,
               cin_i   => opcode_i(2),
               sum_o   => add_res_s,
-              cout_o  => add_cn_s,
-              ovr_o   => add_ovr_s);
+              cout_o  => dep_nsgn_o,
+              ovr_o   => dep_sgn_o);
 
   ------------------------------------------------------------------
   -- Logic
+  
+  sel_logic_s <= '1' when opcode(1 downto 0) = "10" else
+                 '0';
 
   logic_res_s <= (na_i or nb_i) when opcode_i(2) = '1' else
                  (na_i and nb_i);
@@ -107,7 +114,7 @@ begin
   ------------------------------------------------------------------
   -- Result
   
-  res_s <= logic_res_s when opcode_i(1 downto 0) = "10" else
+  res_s <= logic_res_s when sel_logic_s = '1' else
            add_res_s;
           
   result_o <= res_s;
@@ -118,11 +125,5 @@ begin
   -- zero
   z_o <= '1' when unsigned(res_s) = 0 else
          '0';
-  
-  -- excess unsigned
-  dep_nsgn_o <= add_cn_s;
-      
-  -- excess signed    
-  dep_sgn_o  <= add_ovr_s;
                
 end struct;
