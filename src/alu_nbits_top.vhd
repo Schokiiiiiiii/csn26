@@ -14,6 +14,7 @@
 --| Modifications |------------------------------------------------------------
 -- Version  Date      Auteur    Description
 -- 1.0      20.03.26  FLR	Created general schema
+-- 1.1      23.03.26  FLR       Simplified schema and fixed a selection
 --
 -------------------------------------------------------------------------------
 
@@ -48,9 +49,6 @@ architecture struct of alu_nbits_top is
   -- logic signals
   signal logic_res_s : std_logic_vector(N-1 downto 0);
   
-  -- multiplication signals
-  signal mult_res_s : std_logic_vector(N-1 downto 0);
-  
   -- result signals
   signal res_s : std_logic_vector(N-1 downto 0);
     
@@ -75,7 +73,7 @@ begin
   -- Adder
   
   -- left operand
-  add_left_s <= nb_i when opcode_i(1 downto 0) = "01" else
+  add_left_s <= nb_i when opcode_i(1 downto 0) = "10" else
                 na_i;
   
   -- right operand choice
@@ -105,17 +103,11 @@ begin
 
   logic_res_s <= (na_i or nb_i) when opcode_i(2) = '1' else
                  (na_i and nb_i);
-
-  ------------------------------------------------------------------
-  -- Multiplication
-  
-  mult_res_s <= na_i(N-2 downto 0) & "0";
   
   ------------------------------------------------------------------
   -- Result
   
-  res_s <= mult_res_s when opcode_i = "001" else
-           logic_res_s when opcode_i(1 downto 0) = "10" else
+  res_s <= logic_res_s when opcode_i(1 downto 0) = "10" else
            add_res_s;
           
   result_o <= res_s;
@@ -128,11 +120,9 @@ begin
          '0';
   
   -- excess unsigned
-  dep_nsgn_o <= na_i(N-1) when opcode_i = "001" else
-                add_cn_s;
+  dep_nsgn_o <= add_cn_s;
       
   -- excess signed    
-  dep_sgn_o <= (na_i(N-1) xor na_i(N-2)) when opcode_i = "001" else
-               add_ovr_s;
+  dep_sgn_o  <= add_ovr_s;
                
 end struct;
