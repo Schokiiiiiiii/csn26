@@ -44,6 +44,7 @@ architecture struct of alu_nbits_top is
   signal sel_p_s : std_logic;
   signal add_left_s, add_right_s, add_right_before_s : std_logic_vector(N-1 downto 0);
   signal add_res_s : std_logic_vector(N-1 downto 0);
+  signal cn_s, ovr_s : std_logic;
   
   -- logic signals
   signal sel_logic_s : std_logic;
@@ -99,8 +100,8 @@ begin
               nbr_b_i => add_right_s,
               cin_i   => opcode_i(2),
               sum_o   => add_res_s,
-              cout_o  => dep_nsgn_o,
-              ovr_o   => dep_sgn_o);
+              cout_o  => cn_s,
+              ovr_o   => ovr_s);
 
   ------------------------------------------------------------------
   -- Logic
@@ -125,5 +126,12 @@ begin
   -- zero
   z_o <= '1' when unsigned(res_s) = 0 else
          '0';
+    
+  -- excess unsigned
+  dep_nsgn_o <= (not cn_s) when opcode_i(2) = '1' else
+                cn_s;
+  
+  -- excess signed
+  dep_sgn_o  <= ovr_s;
                
 end struct;
