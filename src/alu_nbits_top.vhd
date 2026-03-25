@@ -38,13 +38,16 @@ end alu_nbits_top ;
 
 architecture struct of alu_nbits_top is
 
+  ------------------------------------------------------------------
   -- Intern signals
   
   -- adder signals
-  signal sel_p_s : std_logic;
-  signal add_left_s, add_right_s, add_right_before_s : std_logic_vector(N-1 downto 0);
-  signal add_res_s : std_logic_vector(N-1 downto 0);
-  signal cn_s, ovr_s : std_logic;
+  signal sel_p_s             : std_logic;
+  signal add_p_s             : std_logic_vector(N-1 downto 0);
+  signal add_q_s             : std_logic_vector(N-1 downto 0);
+  signal add_q_before_sign_s : std_logic_vector(N-1 downto 0);
+  signal add_res_s           : std_logic_vector(N-1 downto 0);
+  signal cn_s, ovr_s         : std_logic;
   
   -- logic signals
   signal sel_logic_s : std_logic;
@@ -53,6 +56,7 @@ architecture struct of alu_nbits_top is
   -- result signals
   signal res_s : std_logic_vector(N-1 downto 0);
     
+  ------------------------------------------------------------------
   -- Component declaration
 
   -- adder
@@ -73,31 +77,31 @@ begin
   ------------------------------------------------------------------
   -- Adder
   
-  -- selection for p (left)
+  -- selection for p
   sel_p_s <= '1' when opcode_i(2 downto 0) = "101" else
              '0';
   
   -- left operand
-  add_left_s <= nb_i when sel_p_s = '1' else
-                na_i;
+  add_p_s <= nb_i when sel_p_s = '1' else
+             na_i;
   
-  -- right operand choice
+  -- right operand
   with opcode_i(1 downto 0) select
-    add_right_before_s <= nb_i when "00",
-                          na_i when "01",
-                          (others => '-') when "10",
-                          (0 => '1', others => '0') when "11",
-                          (others => 'X') when others;
+    add_q_before_sign_s <= nb_i when "00",
+                           na_i when "01",
+                           (others => '-') when "10",
+                           (0 => '1', others => '0') when "11",
+                           (others => 'X') when others;
                           
   -- right operand possible inversion
-  add_right_s <= (not add_right_before_s) when opcode_i(2) = '1' else
-                 add_right_before_s;
+  add_q_s <= (not add_q_before_sign_s) when opcode_i(2) = '1' else
+                  add_q_before_sign_s;
                  
   -- addition
   adder: addn_full
     generic map (N => N)
-    port map (nbr_a_i => add_left_s,
-              nbr_b_i => add_right_s,
+    port map (nbr_a_i => add_p_s,
+              nbr_b_i => add_q_s,
               cin_i   => opcode_i(2),
               sum_o   => add_res_s,
               cout_o  => cn_s,
