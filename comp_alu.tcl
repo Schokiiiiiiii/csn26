@@ -15,6 +15,7 @@
 #--| Modifications |--------------------------------------------------------
 # Ver  Aut.  Date        Description
 # 0.1  LFR   07.03.2024  Add file for TestBench
+# 1.0  FLR   25.03.2026  Add files for adder
 ############################################################################
 
 #create library work
@@ -23,9 +24,9 @@ vlib work
 vmap work work
 
 # alu_n files compilation
-# TO COMPLETE: add your adder files
+vcom -reportprogress 300 -work work   ../src/addn.vhd
+vcom -reportprogress 300 -work work   ../src/addn_full.vhd
 vcom -reportprogress 300 -work work   ../src/alu_nbits_top.vhd
-
 
 # test-bench compilation
 vcom -2008 -reportprogress 300 -work work   ../src_tb/logger_pkg.vhd
