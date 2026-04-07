@@ -74,6 +74,8 @@ begin
 	  when "1010"|"1011"                             => cs_capt_analog_o <= '1'; -- analog captor
 	  when "1100"|"1101"                             => cs_cmd_moteur_o  <= '1'; -- command motor
 	  when "1110"|"1111"                             => null;                    -- free
+	  when others                                    => null;
+	end case;
       -- case for simulation                
       when others =>  cs_rom_o    <= 'X';
                       cs_ram_o   <= 'X';
