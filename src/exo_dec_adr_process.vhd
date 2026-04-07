@@ -3,19 +3,20 @@
 -- Institut REDS, Reconfigurable & Embedded Digital Systems
 --
 -- File         : exo_dec_adr_process.vhd
--- Description  : Decodeur d'adresse :
---                Exercice description système combinatoire avec process
+-- Description  : Address decoder
+--                Describing exercise combinatorial system with process
 --
--- Author       : E. Messerli
--- Date         : 31.03.2019, nouvelle version exercice
--- Version      : 0.0
+-- Author       : F. Léger
+-- Date         : 07.04.2026
+-- Version      : 2.0
 --
 -- Dependencies : 
 --
 --| Modifications |------------------------------------------------------------
 -- Version   Author Date               Description
 -- 1.0       EMI    31.03.19           Initial version
--- 0.0       YNG    03.02.25           Update headers
+-- 1.1       YNG    03.02.25           Update header
+-- 2.0       FLR    07.04.26           Described through sequential process
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -45,24 +46,36 @@ begin
     
   begin
  
-     --valeur par defaut
-     --   desactive tous les chips select
-     cs_rom_o    <= '0';
-     cs_ram_o    <= '0';
-
+    -- values by default
+    cs_rom_o         <= '0';
+    cs_ram_o         <= '0';
+    cs_flash_o       <= '0';
+    cs_io_o          <= '0';
+    cs_leds_o        <= '0';
+    cs_switch_o      <= '0';
+    cs_matrice_led_o <= '0';
+    cs_capt_analog_o <= '0';
+    cs_cmd_moteur_o  <= '0';
      
-     a completer .....
-     
-     
-     
-    case ............... is
-      when ......                    => cs_rom_o    <= '1';  -- ROM
-      when ......                    => null;                -- libre
-
-      
-
-      when others => --cas pour simulation
-                      cs_rom_o    <= 'X';
+    -- address decoder
+    case adr_i(15 downto 12) is
+      when "0000"                             => cs_rom_o   <= '1'; -- ROM
+      when "0001"|"0010"|"0011"|"0100"        => null;              -- free
+      when "0101"|"0110"|"0111"               => cs_ram_o   <= '1'; -- RAM
+      when "1000"|"1001"                      => cs_flash_o <= '1'; -- fash
+      when "1010"|"1011"|"1100"|"1101"|"1110" => null;              -- free
+      when "1111"                             => cs_io_o    <= '1'; -- io
+        -- in case it's io check which io it is
+        case adr_i(7 downto 4) is
+	  when "0000"                                    => cs_leds_o        <= '1'; -- leds
+	  when "0001"                                    => cs_switch_o      <= '1'; -- switch
+	  when "0010"|"0011"                             => cs_matrice_led_o <= '1'; -- led matrix
+	  when "0100"|"0101"|"0110"|"0111"|"1000"|"1001" => null;                    -- free
+	  when "1010"|"1011"                             => cs_capt_analog_o <= '1'; -- analog captor
+	  when "1100"|"1101"                             => cs_cmd_moteur_o  <= '1'; -- command motor
+	  when "1110"|"1111"                             => null;                    -- free
+      -- case for simulation                
+      when others =>  cs_rom_o    <= 'X';
                       cs_ram_o   <= 'X';
                       cs_flash_o   <= 'X';
                       cs_io_o     <= 'X';
