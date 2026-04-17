@@ -66,21 +66,26 @@ begin
       when "1010"|"1011"|"1100"|"1101"|"1110" => null;              -- free
       when "1111"                             => cs_io_o    <= '1'; -- io
         -- in case it's io check which io it is
-        case adr_i(7 downto 4) is
-	  when "0000"                                    => cs_leds_o        <= '1'; -- leds
-	  when "0001"                                    => cs_switch_o      <= '1'; -- switch
-	  when "0010"|"0011"                             => cs_matrice_led_o <= '1'; -- led matrix
-	  when "0100"|"0101"|"0110"|"0111"|"1000"|"1001" => null;                    -- free
-	  when "1010"|"1011"                             => cs_capt_analog_o <= '1'; -- analog captor
-	  when "1100"|"1101"                             => cs_cmd_moteur_o  <= '1'; -- command motor
-	  when "1110"|"1111"                             => null;                    -- free
-	  when others                                    => null;
-	end case;
+        -- only used ios for the 2nd MSB at 0x0
+        if (adr_i (11 downto 8) = "0000") then 
+	  case adr_i(7 downto 4) is
+	    when "0000"                                    => cs_leds_o        <= '1'; -- leds
+	    when "0001"                                    => cs_switch_o      <= '1'; -- switch
+	    when "0010"|"0011"                             => cs_matrice_led_o <= '1'; -- led matrix
+	    when "0100"|"0101"|"0110"|"0111"|"1000"|"1001" => null;                    -- free
+	    when "1010"|"1011"                             => cs_capt_analog_o <= '1'; -- analog captor
+	    when "1100"|"1101"                             => cs_cmd_moteur_o  <= '1'; -- command motor
+	    when "1110"|"1111"                             => null;                    -- free
+	    when others                                    => null;
+	  end case;
+	else
+	  null; -- free
+	end if;
       -- case for simulation                
-      when others =>  cs_rom_o    <= 'X';
-                      cs_ram_o   <= 'X';
-                      cs_flash_o   <= 'X';
-                      cs_io_o     <= 'X';
+      when others =>  cs_rom_o         <= 'X';
+                      cs_ram_o         <= 'X';
+                      cs_flash_o       <= 'X';
+                      cs_io_o          <= 'X';
                       cs_leds_o        <= 'X';
                       cs_switch_o      <= 'X'; 
                       cs_matrice_led_o <= 'X';

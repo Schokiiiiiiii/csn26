@@ -163,7 +163,7 @@ begin
     report " *** FELICITATIONS, les cas testes par le TB sont corrects *** ";
   else
     report " *** VOUS AVEZ ENCORE UN PEU DE TRAVAIL, COURAGE *** ";
-    report " *** vous avez " & integer'image(Nb_erreur) & " erreur(s) *** ";
+    report " *** vous avez " & integer'image(nbr_err_s) & " erreur(s) *** ";
   end if ;
   wait ; --stop la simulation
   end process;
