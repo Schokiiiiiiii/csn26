@@ -8,14 +8,15 @@
 -- 
 -- Auteur       : Fabien Léger
 -- Date         : 17.04.2026
--- Version      : 0.0
+-- Version      : 1.0
 -- 
 -- Utilise      : Exercice de description d'elements memoire
 --                en VHDL synthetisable
 -- 
 --| Modifications |------------------------------------------------------------
--- Version   Auteur Date               Description
--- 1.0       FLR    17.04.2026         First version of the flip-flop D
+-- Version   Author Date               Description
+-- 1.0       FLR    17.04.2026         First version of the flip-flop D with
+--                                     reset
 -- 
 -------------------------------------------------------------------------------
 
