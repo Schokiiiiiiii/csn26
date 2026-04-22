@@ -3,13 +3,16 @@
 -- Institut REDS, Reconfigurable & Embedded Digital Systems
 --
 -- Fichier      : flipflop_rs.vhd
--- Auteur       : Etienne Messerli,  20.04.2017
 -- Description  : Flip-flop RS
 -- 
+-- Auteur       : Fabien Léger
+-- Date         : 22.04.2026
+-- Version      : 1.0
 -- 
 -- Utilise      : Exos description d'elements memoire en VHDL synthetisable
 --| Modifications |------------------------------------------------------------
--- Vers.  Qui   Date         Description
+-- Version   Author Date               Description
+-- 1.0       FLR    22.04.2026         Implemented rs flipflop
 --
 -------------------------------------------------------------------------------
 
@@ -38,21 +41,26 @@ entity flipflop_rs is
    );
 end flipflop_rs ;
 
-
 architecture comport of flipflop_rs is
+
+signal q_s: std_logic;
 
 begin
   --Adaptation polarite
   
-  
-
-  
   process(reset_i, clk_i)
   begin
-
-  
-  
+    if reset_i = '1' then
+      q_s <= '0';
+    elsif rising_edge(clk_i) then
+      if R_i = '1' then
+        q_s <= '0';
+      elsif S_i = '1' then
+        q_s <= '1';
+      end if;
+    end if;
   end process;
 
+  Q_o <= q_s;
 
 end comport;

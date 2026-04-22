@@ -3,13 +3,16 @@
 -- Institut REDS, Reconfigurable & Embedded Digital Systems
 --
 -- Fichier      : flipflop_jk.vhd
--- Auteur       : Etienne Messerli,  20.04.2017
 -- Description  : Flip-flop JK
 -- 
+-- Auteur       : Fabien Léger
+-- Date         : 22.04.2026
+-- Version      : 1.0
 -- 
 -- Utilise      : Exos description d'elements memoire en VHDL synthetisable
 --| Modifications |------------------------------------------------------------
--- Vers.  Qui   Date         Description
+-- Version   Author Date               Description
+-- 1.0       FLR    22.04.2026         Implemented jk flipflop
 --
 -------------------------------------------------------------------------------
 
@@ -39,21 +42,29 @@ entity flipflop_jk is
    );
 end flipflop_jk ;
 
-
 architecture comport of flipflop_jk is
+
+signal q_s: std_logic;
 
 begin
   --Adaptation polarite
   
-  
-
-  
-  process(reset_s, clk_i)
+  process(reset_i, clk_i)
   begin
-
-  
-  
+    if reset_i = '1' then
+      q_s <= '0';
+    elsif rising_edge(clk_i) then
+      if J_i = '1' and K_i = '1' then
+        q_s <= not q_s;
+      elsif J_i = '1' then
+        q_s <= '1';
+      elsif K_i = '1' then
+        q_s <= '0';
+      end if;
+    end if;
   end process;
-
+  
+  Q_o  <= q_s;
+  nQ_o <= not q_s;
 
 end comport;
