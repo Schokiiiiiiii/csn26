@@ -45,7 +45,7 @@ architecture timer of timer_top is
   signal reg_pres_s : unsigned(6 downto 0);
   signal reg_fut_s  : unsigned(6 downto 0);
 
-  signal not_enabled_s : std_logic;
+  signal enabled_s : std_logic;
   signal eq_zero_s: std_logic;
   signal load_val_s: std_logic;
   signal load_reg_pres_s: std_logic;
@@ -54,7 +54,7 @@ begin
     -- adaptation de polarité
     reset_s <= not nReset_i;
 
-    not_enabled_s <= '1' when (run_mono_i = '0') and (en_div_i = '0') else '0';
+    enabled_s <= '1' when (run_mono_i = '1') or (en_div_i = '1') else '0';
     eq_zero_s <= '1' when (reg_pres_s = 0) else
                  '0';
 
@@ -62,7 +62,7 @@ begin
     load_reg_pres_s <= '1' when (eq_zero_s = '1' and run_mono_i = '1' and Mono_nDiv_i = '1') else '0';
 
 
-    reg_fut_s <= unsigned(val_i) when not_enabled_s = '1' else
+    reg_fut_s <= unsigned(val_i) when enabled_s = '0' else
                  unsigned(val_i) when load_val_s = '1' else
                  reg_pres_s when load_reg_pres_s = '1' else
                  reg_pres_s - 1;
