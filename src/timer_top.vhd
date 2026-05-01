@@ -6,9 +6,9 @@
 --
 -- Description  :
 --
--- Auteur       : Etienne Messerli
--- Date         : 28.10.2015
--- Version      : 0.0
+-- Auteur       : Fabien Léger & Antoine Leresche
+-- Date         : 01.05.2026
+-- Version      : 4.0
 --
 -- Utilise      : Manipulation Timer pour cours CSN
 --
@@ -17,11 +17,13 @@
 -- 0.0    EMI   29.09.2014   version intiale, entite du timer_top
 -- 1.0    GAA   04.11.2015   Solution timer_top
 -- 1.1    GAA   03.12.2015   Correct. détection fin de comptage pour monostable.
---         Le signal Done_o passait à '1' un tick trop tôt. Ajout de det_0_s pour
---         la détection de fin en mode monostable et det_1_s pour le mode diviseur
+--                           Le signal Done_o passait à '1' un tick trop tôt.
+--                           Ajout de det_0_s pour la détection de fin en mode
+--                           monostable et det_1_s pour le mode diviseur
 -- 2.0    EMI   11.11.2016   Nouvelle version du monostable.
 --                           signal run_mono doit rester actif (voir enonce 2016)
--- 3.0    ALE & FLG 29.04.2026
+-- 3.0    ALE   29.04.2026   Ajout du décodeur d'états futur et du registre
+-- 4.0    FLR   01.05.2026   Ajout du décodeur de sorties et réagancement code
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -41,42 +43,55 @@ entity timer_top is
 end timer_top ;
 
 architecture timer of timer_top is
-  signal reset_s  	: std_logic;
-  signal reg_pres_s : unsigned(6 downto 0);
-  signal reg_fut_s  : unsigned(6 downto 0);
+  -- signaux registre
+  signal reset_s         : std_logic;
+  signal cpt_pres_s      : unsigned(6 downto 0);
+  signal cpt_fut_s       : unsigned(6 downto 0);
 
-  signal enabled_s : std_logic;
-  signal eq_zero_s: std_logic;
-  signal load_val_s: std_logic;
-  signal load_reg_pres_s: std_logic;
+  -- signaux décodeur d'états futurs
+  signal enabled_s       : std_logic;
+  signal load_val_s      : std_logic;
+  signal load_cpt_pres_s : std_logic;
+  
+  -- signaux décodeur de sorties
+  signal eq_zero_s       : std_logic;
+  signal div_nEnDiv_s    : std_logic;
 begin
 
     -- adaptation de polarité
     reset_s <= not nReset_i;
 
-    enabled_s <= '1' when (run_mono_i = '1') or (en_div_i = '1') else '0';
-    eq_zero_s <= '1' when (reg_pres_s = 0) else
-                 '0';
+    -- sélection décodeur d'états futurs
+    enabled_s       <= '1' when (run_mono_i = '1') or (en_div_i = '1') else
+                       '0';
+    load_val_s      <= '1' when (eq_zero_s = '1' and en_div_i = '1' and Mono_nDiv_i = '0') else
+                       '0';
+    load_cpt_pres_s <= '1' when (eq_zero_s = '1' and run_mono_i = '1' and Mono_nDiv_i = '1') else
+                       '0';
 
-    load_val_s <= '1' when (eq_zero_s = '1' and en_div_i = '1' and Mono_nDiv_i = '0') else '0';
-    load_reg_pres_s <= '1' when (eq_zero_s = '1' and run_mono_i = '1' and Mono_nDiv_i = '1') else '0';
-
-
-    reg_fut_s <= unsigned(val_i) when enabled_s = '0' else
+    -- décodeur d'états futurs
+    cpt_fut_s <= unsigned(val_i) when enabled_s = '0' else
                  unsigned(val_i) when load_val_s = '1' else
-                 reg_pres_s when load_reg_pres_s = '1' else
-                 reg_pres_s - 1;
+                 cpt_pres_s when load_cpt_pres_s = '1' else
+                 cpt_pres_s - 1;
 
-
+    -- registre 
     process(reset_s, clock_i)
     begin
         if reset_s = '1' then
-            reg_pres_s <= (others => '0');
+            cpt_pres_s <= (others => '0');
         elsif rising_edge(clock_i) then
-            reg_pres_s <= reg_fut_s;
+            cpt_pres_s <= cpt_fut_s;
         end if;
     end process;
 
-    done_o <= eq_zero_s;
+    -- décodeur de sorties
+    -- égalité à '0' -> fin du timer
+    eq_zero_s    <= '1' when (cpt_pres_s = 0) else
+    	            '0';
+    	            
+    -- mise à '1' si en mod div sans l'en activé sinon égalité avec zéro
+    done_o <= '1' when ((Mono_nDiv_i = '1' nor en_div_i = '1') and cpt_pres_s = val_i) else
+             eq_zero_s;
 
 end timer;
