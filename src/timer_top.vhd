@@ -64,7 +64,7 @@ begin
     -- sélection décodeur d'états futurs
     load_val_s      <= '1' when (en_div_i = '0' and run_mono_i = '0') else
                        '1' when (Mono_nDiv_i = '0' and en_div_i = '0' and run_mono_i = '1') else
-                       '1' when (Mono_nDiv_i = '0' and en_div_i = '1' and eq_zero_s = '1') else
+                       '1' when (Mono_nDiv_i = '0' and en_div_i = '1' and eq_zero_s = '1') else -- ajouter load val_i - 1
                        '1' when (Mono_nDiv_i = '1' and en_div_i = '1' and run_mono_i = '0') else
                        '0';
     load_cpt_pres_s <= '1' when (eq_zero_s = '1' and run_mono_i = '1' and Mono_nDiv_i = '1') else
