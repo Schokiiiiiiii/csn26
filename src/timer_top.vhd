@@ -91,7 +91,7 @@ begin
     	            '0';
     	            
     -- mise à '1' si en mod div sans l'en activé sinon égalité avec zéro
-    done_o <= '1' when ((Mono_nDiv_i = '1' nor en_div_i = '1') and cpt_pres_s = val_i) else
-             eq_zero_s;
+    done_o <= '1' when ((Mono_nDiv_i = '1' nor en_div_i = '1') and cpt_pres_s = unsigned(val_i)) else
+              eq_zero_s;
 
 end timer;
