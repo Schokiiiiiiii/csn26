@@ -50,12 +50,9 @@ architecture timer of timer_top is
   signal cpt_fut_s       : unsigned(6 downto 0);
 
   -- signaux décodeur d'états futurs
-  signal load_zero_s      : std_logic;
-  signal load_val_minus_s : std_logic;
-  signal load_val_s       : std_logic;
-  signal load_zero_back_s : std_logic; -- même effet que load_zero, mais condition différente
-  signal to_decr_load_s   : unsigned(6 downto 0); -- val ou cpt_pres à décrémenter par la suite
-  
+  signal to_decr_s, decr_out_s  : unsigned(6 downto 0); -- val ou cpt_pres à décrémenter par la suite
+  signal dec_div_s, dec_mono_s: unsigned(6 downto 0);
+
   -- signaux décodeur de sorties
   signal eq_zero_s       : std_logic;
 begin
@@ -63,27 +60,25 @@ begin
     -- adaptation de polarité
     reset_s <= not nReset_i;
 
-    -- sélection décodeur d'états futurs
-    load_zero_s      <= '1' when (Mono_nDiv_i = '0') and (en_div_i = '0') else
-                        '0';
-    load_val_minus_s <= '1' when (Mono_nDiv_i = '0') and (en_div_i = '1') and (eq_zero_s = '1') else
-                        '0';
-    load_val_s       <= '1' when (Mono_nDiv_i = '1') and (run_mono_i = '0') else
-                        '0';
-    load_zero_back_s <= '1' when (Mono_nDiv_i = '1') and (run_mono_i = '1') and (eq_zero_s = '1') else
-                        '0';
-
     -- décrémentation selon val ou cpt_pres
-    to_decr_load_s <= unsigned(val_i) when load_val_minus_s = '1' else
+    to_decr_s <= unsigned(val_i) when (en_div_i = '1' and eq_zero_s = '1') else
                       cpt_pres_s;
+    decr_out_s <= to_decr_s - 1;
+
+    -- décodeur pour mode mono
+    dec_mono_s <= unsigned(val_i) when run_mono_i = '0' else
+                    to_unsigned(0, cpt_pres_s'length) when eq_zero_s = '1' else
+                    decr_out_s;
+    -- décodeur pour mode div
+    dec_div_s <= to_unsigned(0, cpt_pres_s'length) when en_div_i = '0' else
+                decr_out_s;
 
     -- décodeur d'états futurs
-    cpt_fut_s <= (others => '0') when (load_zero_s = '1') or (load_zero_back_s = '1') else
-                 unsigned(val_i) when (load_val_s = '1') else
-                 to_decr_load_s - 1;
-                 
+    cpt_fut_s <= dec_mono_s when Mono_nDiv_i = '1' else
+                    dec_div_s;
 
-    -- registre 
+
+    -- registre
     process(reset_s, clock_i)
     begin
         if reset_s = '1' then
@@ -97,7 +92,7 @@ begin
     -- égalité à '0' -> fin du timer
     eq_zero_s <= '1' when (cpt_pres_s = 0) else
     	         '0';
-    	            
+
     -- mise à '1' si en mod div sans l'en activé sinon égalité avec zéro
     done_o <= eq_zero_s;
 
