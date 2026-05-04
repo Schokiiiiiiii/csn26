@@ -93,7 +93,6 @@ begin
     eq_zero_s <= '1' when (cpt_pres_s = 0) else
     	         '0';
 
-    -- mise à '1' si en mod div sans l'en activé sinon égalité avec zéro
     done_o <= eq_zero_s;
 
 end timer;
