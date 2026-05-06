@@ -143,9 +143,9 @@ begin
   );
 
   Led_s(0) <= done_s;
-  Con_25p_io(1) <= done_s;      -- mesure avec oscillo sur pin 1
-  Con_25p_io(7) <= Button_s(1); -- mesure en_div_i pin 3
-  Con_25p_io(13) <= Button_s(8);  -- mesure run_mono_i pin 5
+  Con_25p_io(1) <= done_s;        -- mesure avec oscillo sur pin 1
+  Con_25p_io(7) <= Button_s(1);   -- mesure en_div_i pin 7
+  Con_25p_io(13) <= Button_s(8);  -- mesure run_mono_i pin 13
   ----------------------------------------------------------------------------------------
   --| Generation of blink_1hz_s and oscill_s |--------------------------------------------
   process (Clk_Main_i, Reset_s)
