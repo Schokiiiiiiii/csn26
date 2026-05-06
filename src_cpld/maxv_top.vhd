@@ -137,13 +137,15 @@ begin
      nReset_i     => nReset_i,
      en_div_i     => Button_s(1),
      Mono_nDiv_i  => Switch_i(7),
-     run_mono_i => Button_s(8),
+     run_mono_i   => Button_s(8),
      val_i        => Switch_i(6downto 0),
      done_o       => done_s
   );
 
   Led_s(0) <= done_s;
-  Con_25p_io(1) <= done_s;  -- mesure avec oscillo sur pin 1
+  Con_25p_io(1) <= done_s;      -- mesure avec oscillo sur pin 1
+  Con_25p_io(7) <= Button_s(1); -- mesure en_div_i pin 3
+  Con_25p_io(13) <= Button_s(8);  -- mesure run_mono_i pin 5
   ----------------------------------------------------------------------------------------
   --| Generation of blink_1hz_s and oscill_s |--------------------------------------------
   process (Clk_Main_i, Reset_s)
