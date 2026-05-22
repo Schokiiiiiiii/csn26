@@ -12,7 +12,7 @@
 --| Modifications |------------------------------------------------------------
 -- Ver   Date      Qui         Description
 -- 1.0   05.05.16  EMI         version initiale
--- 1.1   19.11.20  SMS         remplacement des constantes par des génériques
+-- 1.1   19.11.20  SMS         remplacement des constantes par des gï¿½nï¿½riques
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -21,8 +21,8 @@ use ieee.numeric_std.all;
 
 entity timer is
     generic (
-        T1_g : natural range 1 to 1023 := 2;
-        T2_g : natural range 1 to 1023 := 3 );
+        T1_g : natural range 1 to 1023 := 300;
+        T2_g : natural range 1 to 1023 := 200 );	
     port (
         clock_i    : in  std_logic;
         reset_i    : in  std_logic;
@@ -34,18 +34,32 @@ entity timer is
 end timer;
 
 architecture comport of timer is
-
-  ----------
-  -- TODO --
-  ----------
+	
+	signal reg_pres 	: unsigned(9 downto 0);
+	signal reg_fut 	: unsigned(9 downto 0);
 
 
 begin
-
-
-  ----------
-  -- TODO --
-  ----------
+	
+	reg_fut <= 
+		reg_pres 		when top_ms_i = '0' 	else 	-- hold
+		"0000000000" 	when start_i = '1' 	else 	-- load 0
+		reg_pres			when reg_pres = 1023 else	-- hold
+		reg_pres + 1;										-- increment
+	
+	--Description of synchronous register
+	Mem: process (clock_i, reset_i)
+	begin
+		if (reset_i = '1') then
+			reg_pres <= (others => '0');
+		elsif rising_edge(clock_i) then
+			reg_pres <= reg_fut;
+		end if;
+	end process;
+	
+	-- determine the outputs
+	trigger1_o <= '1' when reg_pres >= T1_g else '0';
+	trigger2_o <= '1' when reg_pres > T2_g else '0';
 
 
 end comport;
