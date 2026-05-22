@@ -33,8 +33,8 @@ end mss_clic_dblclic;
 
 architecture state_machine of mss_clic_dblclic is
 
-  signal state_pres_s(2 downto 0);
-  signal state_fut_s(2 downto 0);
+  signal state_pres_s : std_logic_vector(2 downto 0);
+  signal state_fut_s  : std_logic_vector(2 downto 0);
 
   constant INIT       : std_logic_vector(2 downto 0) := "000";
   constant IDLE       : std_logic_vector(2 downto 0) := "001";
