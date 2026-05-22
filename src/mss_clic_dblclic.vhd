@@ -76,7 +76,7 @@ begin
       when C1_PRESSED =>
         start_o <= '1';
         if (trigger1_i = '0' and bouton_i = '0') then
-          state_fut_s <= C1_VALID
+          state_fut_s <= C1_VALID;
         elsif (trigger1_i = '0' and bouton_i = '1') then
           state_fut_s <= C1_PRESSED;
         elsif (trigger1_i = '1' and bouton_i = '0') then
