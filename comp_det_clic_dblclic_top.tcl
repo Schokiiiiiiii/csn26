@@ -22,7 +22,7 @@ vmap work work
 
 ###########################################################################
 # to be complete with all your new files
-#vcom -reportprogress 300 -work work   ../src/ **** to complete *****
+vcom -reportprogress 300 -work work   ../src/mss_clic_dblclic.vhd
 
 ###########################################################################
 
