@@ -35,31 +35,29 @@ end timer;
 
 architecture comport of timer is
 	
-	signal reg_pres 	: unsigned(9 downto 0);
-	signal reg_fut 	: unsigned(9 downto 0);
+  signal reg_pres_s 	: unsigned(9 downto 0);
+  signal reg_fut_s 	: unsigned(9 downto 0);
 
 
 begin
 	
-	reg_fut <= 
-		reg_pres 		when top_ms_i = '0' 	else 	-- hold
-		"0000000000" 	when start_i = '1' 	else 	-- load 0
-		reg_pres			when reg_pres = 1023 else	-- hold
-		reg_pres + 1;										-- increment
+  reg_fut_s <= "0000000000" when start_i = '1' else -- load 0
+	     reg_pres_s when top_ms_i = '0' else 	-- hold
+	     reg_pres_s when reg_pres_s = 1023 else	-- hold
+	     reg_pres_s + 1;			-- increment
 	
-	--Description of synchronous register
-	Mem: process (clock_i, reset_i)
-	begin
-		if (reset_i = '1') then
-			reg_pres <= (others => '0');
-		elsif rising_edge(clock_i) then
-			reg_pres <= reg_fut;
-		end if;
-	end process;
+  --Description of synchronous register
+  Mem: process (clock_i, reset_i)
+  begin
+    if (reset_i = '1') then
+      reg_pres_s <= (others => '0');
+    elsif rising_edge(clock_i) then
+      reg_pres_s <= reg_fut_s;
+    end if;
+  end process;
 	
-	-- determine the outputs
-	trigger1_o <= '1' when reg_pres >= T1_g else '0';
-	trigger2_o <= '1' when reg_pres > T2_g else '0';
-
+  -- determine the outputs
+  trigger1_o <= '1' when reg_pres_s > T1_g else '0';
+  trigger2_o <= '1' when reg_pres_s > T2_g else '0';
 
 end comport;
