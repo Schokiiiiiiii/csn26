@@ -13,6 +13,8 @@
 -- Ver   Date      Qui         Description
 -- 1.0   05.05.16  EMI         version initiale
 -- 1.1   19.11.20  SMS         remplacement des constantes par des generiques
+-- 2.0   25.05.26  JNT         First version
+-- 3.0   26.05.26  FLR         Working version with comments
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -35,18 +37,20 @@ end timer;
 
 architecture comport of timer is
 	
+  -- Internal signals declaration
   signal reg_pres_s 	: unsigned(9 downto 0);
   signal reg_fut_s 	: unsigned(9 downto 0);
 
 
 begin
 	
+  -- Future state decoder
   reg_fut_s <= (others => '0') when start_i = '1' else -- load 0
 	       reg_pres_s when reg_pres_s >= 1023 else -- hold (max)
 	       reg_pres_s + 1 when top_ms_i = '1' else -- increment
 	       reg_pres_s;			       -- hold
 	
-  --Description of synchronous register
+  -- Description of synchronous register
   Mem: process (clock_i, reset_i)
   begin
     if (reset_i = '1') then
@@ -56,7 +60,7 @@ begin
     end if;
   end process;
 	
-  -- determine the outputs
+  -- Determine the outputs
   trigger1_o <= '1' when reg_pres_s > T1_g else
                 '0';
   trigger2_o <= '1' when reg_pres_s > T2_g else

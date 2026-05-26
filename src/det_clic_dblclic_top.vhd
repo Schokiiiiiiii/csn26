@@ -14,6 +14,7 @@
 -- 1.0   20.11.2020  EMI   Ajout generique pour timer et maintien
 -- 2.0   25.05.2026  JNI   Added entities and code structure
 -- 2.1   26.05.2026  FLR   Improved readability and removed useless declarations
+-- 2.2   26.05.2026  FLR   Removed useless top_ms_i in mss and comments
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -51,6 +52,7 @@ architecture struct of det_clic_dblclic_top is
 
   
   -- Component declarations
+  -- Treatment Unit
   component timer
     generic (
              T1_g : natural range 1 to 1023 := 300;
@@ -67,6 +69,7 @@ architecture struct of det_clic_dblclic_top is
   end component;
   for all : timer use entity work.timer;
 	
+  -- Control Unit
   component mss_clic_dblclic
     port (
           clock_i        : in  std_logic;
@@ -81,6 +84,7 @@ architecture struct of det_clic_dblclic_top is
   end component;
   for all : mss_clic_dblclic use entity work.mss_clic_dblclic;
 
+  -- Holding Component
   component maintien
     generic (T_HOLD : natural range 1 to 1023 := 2
              );
@@ -95,9 +99,11 @@ architecture struct of det_clic_dblclic_top is
 
 
 begin
-	
+
+  -- Adapt polarity
   reset_s <= not nReset_i;
 	
+  -- Make button_i synchronous through a flip-flop D
   process(reset_s, clock_i)
   begin
     if reset_s = '1' then
@@ -107,6 +113,7 @@ begin
     end if;
   end process;
 		
+  -- Treatment unit to count time after clicks and releases
   U_timer : timer
     generic map (T1_g => T1_g,
 		 T2_g => T2_g
@@ -118,7 +125,8 @@ begin
 	      trigger1_o => trigger1_s,
 	      trigger2_o => trigger2_s
 	      );
-		
+	
+  -- Control unit to start the timer and handle outputs
   mss : mss_clic_dblclic
     port map(clock_i        => clock_i,
              reset_i        => reset_s,
@@ -130,6 +138,7 @@ begin
              double_click_o => double_click_s
 	     );
 	
+  -- Holds the single click
   clic_lg : maintien
     generic map (T_HOLD => T_HOLD
 		)
@@ -139,7 +148,8 @@ begin
               top_ms_i   => top_ms_i,
               p_hold_o   => clic_lg_o
 	      );
-		
+	
+  -- Holds the double click	
   dbl_clic_lg : maintien
     generic map (T_HOLD => T_HOLD
 		 )
@@ -150,6 +160,7 @@ begin
               p_hold_o   => dbl_clic_lg_o
 	      );
 	
+  -- Single clock time outputs
   clic_o <= simple_click_s;
   dbl_clic_o <= double_click_s;
 

@@ -12,6 +12,7 @@
 --| Modifications |------------------------------------------------------------
 -- Ver   Date      Who         Description
 -- 1.0   22.05.26  FLR         Initial version
+-- 2.0   26.05.26  FLR         Working version with comments
 -------------------------------------------------------------------------------
 
 library ieee;
