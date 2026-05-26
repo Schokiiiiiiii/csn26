@@ -33,16 +33,19 @@ end mss_clic_dblclic;
 
 architecture state_machine of mss_clic_dblclic is
 
-  signal state_pres_s : std_logic_vector(2 downto 0);
-  signal state_fut_s  : std_logic_vector(2 downto 0);
+  signal state_pres_s : std_logic_vector(3 downto 0);
+  signal state_fut_s  : std_logic_vector(3 downto 0);
 
-  constant INIT       : std_logic_vector(2 downto 0) := "000";
-  constant IDLE       : std_logic_vector(2 downto 0) := "001";
-  constant C1_PRESSED : std_logic_vector(2 downto 0) := "010";
-  constant C1_VALID   : std_logic_vector(2 downto 0) := "011";
-  constant C1_SINGLE  : std_logic_vector(2 downto 0) := "100";
-  constant C2_PRESSED : std_logic_vector(2 downto 0) := "101";
-  constant C2_DOUBLE  : std_logic_vector(2 downto 0) := "110";
+  constant INIT          : std_logic_vector(3 downto 0) := "0000";
+  constant WAIT_PRESS1   : std_logic_vector(3 downto 0) := "0001";
+  constant START1	 : std_logic_vector(3 downto 0) := "0010";
+  constant WAIT_RELEASE1 : std_logic_vector(3 downto 0) := "0011";
+  constant START2	 : std_logic_vector(3 downto 0) := "0100";
+  constant WAIT_PRESS2   : std_logic_vector(3 downto 0) := "0101";
+  constant START3	 : std_logic_vector(3 downto 0) := "0110";
+  constant WAIT_RELEASE2 : std_logic_vector(3 downto 0) := "0111";
+  constant PULSE_SINGLE  : std_logic_vector(3 downto 0) := "1000";
+  constant PULSE_DOUBLE  : std_logic_vector(3 downto 0) := "1001";
 
 begin
 
@@ -59,66 +62,75 @@ begin
     
     case state_pres_s is
     
-      when INIT =>
+      when INIT => 
         if (bouton_i = '0') then
-          state_fut_s <= IDLE;
+          state_fut_s <= WAIT_PRESS1; -- bouton released
         else
-          state_fut_s <= INIT;
+          state_fut_s <= INIT;        -- bouton pressed
         end if;
         
-      when IDLE => 
+      when WAIT_PRESS1 => 
         if (bouton_i = '1') then
-          state_fut_s <= C1_PRESSED;
+          state_fut_s <= START1;      -- bouton pressed
         else 
-          state_fut_s <= IDLE;
+          state_fut_s <= WAIT_PRESS1; -- bouton not pressed
         end if;
         
-      when C1_PRESSED =>
+      when START1 =>
         start_o <= '1';
+        state_fut_s <= WAIT_RELEASE1; -- timer started, waiting for release 1 or timeout
+        
+      when WAIT_RELEASE1 =>
         if (trigger1_i = '0' and bouton_i = '0') then
-          state_fut_s <= C1_VALID;
+          state_fut_s <= START2;                  -- stopped pressing
         elsif (trigger1_i = '0' and bouton_i = '1') then
-          state_fut_s <= C1_PRESSED;
+          state_fut_s <= WAIT_RELEASE1;           -- still pressing
         elsif (trigger1_i = '1' and bouton_i = '0') then
-          state_fut_s <= IDLE;
+          state_fut_s <= WAIT_PRESS1;             -- timeout and stopped pressing
         else
-          state_fut_s <= INIT;
+          state_fut_s <= INIT;                    -- timeout but still pressing
         end if;
         
-      when C1_VALID =>
+      when START2 =>
         start_o <= '1';
-        if (trigger2_i = '0' and bouton_i = '1') then
-          state_fut_s <= C2_PRESSED;
-        elsif (trigger2_i = '1') then
-          state_fut_s <= C1_SINGLE;
+        state_fut_s <= WAIT_PRESS2; -- timer started -> waiting for press 2 or timeout
+        
+      when WAIT_PRESS2 =>
+        if trigger2_i = '1' then
+          state_fut_s <= PULSE_SINGLE; -- timeout -> single click
+        elsif bouton_i = '1' then
+          state_fut_s <= START3;       -- bouton pressed -> start double click timer
         else
-          state_fut_s <= C1_VALID;
+          state_fut_s <= WAIT_PRESS2;  -- not pressed and no timeout -> wait
         end if;
         
-      when C1_SINGLE =>
+      when START3 =>
+        start_o <= '1';
+        state_fut_s <= WAIT_RELEASE2;  -- timer started, waiting for release 2 or timeout
+        
+      when WAIT_RELEASE2 =>
+        if (trigger1_i = '1') then
+          state_fut_s <= PULSE_SINGLE;   -- timeout
+        elsif (bouton_i = '0') then
+          state_fut_s <= PULSE_DOUBLE;  -- bouton released
+        else
+          state_fut_s <= WAIT_RELEASE2; -- not released and no timeout
+        end if;
+        
+      when PULSE_SINGLE =>
         simple_click_o <= '1';
         if (bouton_i = '1') then
-          state_fut_s <= C1_PRESSED;
+          state_fut_s <= INIT;         -- bouton pressed -> wait for release
         else
-          state_fut_s <= IDLE;
+          state_fut_s <= WAIT_PRESS1;  -- bouton released -> wait for bouton
         end if;
         
-      when C2_PRESSED =>
-        start_o <= '1';
-        if (trigger1_i = '0' and bouton_i = '0') then
-          state_fut_s <= C2_DOUBLE;
-        elsif (trigger1_i = '1') then 
-          state_fut_s <= C1_SINGLE;
-        else
-          state_fut_s <= C2_PRESSED;
-        end if;
-        
-      when C2_DOUBLE =>
+      when PULSE_DOUBLE =>
         double_click_o <= '1';
         if (bouton_i = '1') then
-          state_fut_s <= C1_PRESSED;
+          state_fut_s <= INIT;        -- bouton pressed -> wait for release
         else
-          state_fut_s <= IDLE;
+          state_fut_s <= WAIT_PRESS1; -- bouton released -> wait for bouton
         end if;
         
       when others =>

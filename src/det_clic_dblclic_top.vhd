@@ -23,8 +23,8 @@ library ieee;
 use work.det_clic_dblclic_pkg.all;
 
 entity det_clic_dblclic_top is
-    generic (T1_g      : natural range 1 to 1023 := 4;
-             T2_g      : natural range 1 to 1023 := 6;
+    generic (T1_g      : natural range 1 to 1023 := 6;
+             T2_g      : natural range 1 to 1023 := 4;
              T_HOLD    : natural range 1 to 1023 := 2
              );
     port(clock_i       : in  std_logic;  --horloge systeme 1MHz
@@ -98,17 +98,18 @@ begin
 	
   reset_s <= not nReset_i;
 	
-  process(clock_i, button_i)
+  process(reset_s, clock_i)
   begin
-    if rising_edge(clock_i) then
+    if reset_s = '1' then
+      button_s <= '0';
+    elsif rising_edge(clock_i) then
       button_s <= button_i;
     end if;
   end process;
 		
-
   U_timer : timer
-    generic map (T1_g => T1_c,
-		 T2_g => T2_c
+    generic map (T1_g => T1_g,
+		 T2_g => T2_g
 		 )
     port map (clock_i => clock_i,
 	      reset_i => reset_s,
@@ -130,7 +131,7 @@ begin
 	     );
 	
   clic_lg : maintien
-    generic map (T_HOLD => T_HOLD_C
+    generic map (T_HOLD => T_HOLD
 		)
     port map (clock_i    => clock_i,
               reset_i    => reset_s,
@@ -140,7 +141,7 @@ begin
 	      );
 		
   dbl_clic_lg : maintien
-    generic map (T_HOLD => T_HOLD_C
+    generic map (T_HOLD => T_HOLD
 		 )
     port map (clock_i    => clock_i,
               reset_i    => reset_s,
