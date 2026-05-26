@@ -25,7 +25,6 @@ entity mss_clic_dblclic is
         trigger1_i     : in  std_logic;
         trigger2_i     : in  std_logic;
         bouton_i       : in  std_logic;
-        top_ms_i       : in  std_logic;
         start_o        : out std_logic;
 	simple_click_o : out std_logic;
 	double_click_o : out std_logic
@@ -51,7 +50,7 @@ architecture state_machine of mss_clic_dblclic is
 begin
 
   -- processing future state
-  Fut: process (trigger1_i, trigger2_i, bouton_i, top_ms_i, state_pres_s)
+  Fut: process (trigger1_i, trigger2_i, bouton_i, state_pres_s)
   begin
   
     -- default value state

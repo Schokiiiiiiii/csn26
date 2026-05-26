@@ -23,8 +23,8 @@ library ieee;
 use work.det_clic_dblclic_pkg.all;
 
 entity det_clic_dblclic_top is
-    generic (T1_g      : natural range 1 to 1023 := 6;
-             T2_g      : natural range 1 to 1023 := 4;
+    generic (T1_g      : natural range 1 to 1023 := 4;
+             T2_g      : natural range 1 to 1023 := 6;
              T_HOLD    : natural range 1 to 1023 := 2
              );
     port(clock_i       : in  std_logic;  --horloge systeme 1MHz
@@ -74,7 +74,6 @@ architecture struct of det_clic_dblclic_top is
           trigger1_i     : in  std_logic;
           trigger2_i     : in  std_logic;
           bouton_i       : in  std_logic;
-          top_ms_i       : in  std_logic;
           start_o        : out std_logic;
           simple_click_o : out std_logic;
 	  double_click_o : out std_logic
@@ -126,7 +125,6 @@ begin
              trigger1_i     => trigger1_s,
              trigger2_i     => trigger2_s,
              bouton_i       => button_s,
-             top_ms_i       => top_ms_i,
              start_o        => start_s,
              simple_click_o => simple_click_s,
              double_click_o => double_click_s

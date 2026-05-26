@@ -1,3 +1,4 @@
 *.zip
 comp/*
 pr/*
+pr_cpld/*
