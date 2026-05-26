@@ -25,6 +25,7 @@ entity mss_clic_dblclic is
         trigger1_i     : in  std_logic;
         trigger2_i     : in  std_logic;
         bouton_i       : in  std_logic;
+        top_ms_i       : in  std_logic;
         start_o        : out std_logic;
 	simple_click_o : out std_logic;
 	double_click_o : out std_logic
@@ -50,7 +51,7 @@ architecture state_machine of mss_clic_dblclic is
 begin
 
   -- processing future state
-  Fut: process (trigger1_i, trigger2_i, bouton_i, state_pres_s)
+  Fut: process (trigger1_i, trigger2_i, bouton_i, top_ms_i, state_pres_s)
   begin
   
     -- default value state
@@ -109,12 +110,14 @@ begin
         state_fut_s <= WAIT_RELEASE2;  -- timer started, waiting for release 2 or timeout
         
       when WAIT_RELEASE2 =>
-        if (trigger1_i = '1') then
-          state_fut_s <= PULSE_SINGLE;   -- timeout
-        elsif (bouton_i = '0') then
-          state_fut_s <= PULSE_DOUBLE;  -- bouton released
+        if (trigger1_i = '1' and bouton_i = '1') then
+          state_fut_s <= INIT;          -- timeout -> invalid sequence back to init
+        elsif (trigger1_i = '1' and bouton_i = '0') then
+          state_fut_s <= WAIT_PRESS1;   -- timeout -> invalid sequence back to wait first click
+        elsif bouton_i = '0' then
+          state_fut_s <= PULSE_DOUBLE;  -- bouton released -> send double signal
         else
-          state_fut_s <= WAIT_RELEASE2; -- not released and no timeout
+          state_fut_s <= WAIT_RELEASE2; -- no timeout or release
         end if;
         
       when PULSE_SINGLE =>

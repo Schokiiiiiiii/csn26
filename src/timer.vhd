@@ -12,7 +12,7 @@
 --| Modifications |------------------------------------------------------------
 -- Ver   Date      Qui         Description
 -- 1.0   05.05.16  EMI         version initiale
--- 1.1   19.11.20  SMS         remplacement des constantes par des g�n�riques
+-- 1.1   19.11.20  SMS         remplacement des constantes par des generiques
 -------------------------------------------------------------------------------
 
 library ieee;
@@ -41,10 +41,10 @@ architecture comport of timer is
 
 begin
 	
-  reg_fut_s <= "0000000000" when start_i = '1' else -- load 0
-	     reg_pres_s when top_ms_i = '0' else 	-- hold
-	     reg_pres_s when reg_pres_s = 1023 else	-- hold
-	     reg_pres_s + 1;			-- increment
+  reg_fut_s <= (others => '0') when start_i = '1' else -- load 0
+	       reg_pres_s when reg_pres_s >= 1023 else -- hold (max)
+	       reg_pres_s + 1 when top_ms_i = '1' else -- increment
+	       reg_pres_s;			       -- hold
 	
   --Description of synchronous register
   Mem: process (clock_i, reset_i)
@@ -57,7 +57,9 @@ begin
   end process;
 	
   -- determine the outputs
-  trigger1_o <= '1' when reg_pres_s > T1_g else '0';
-  trigger2_o <= '1' when reg_pres_s > T2_g else '0';
+  trigger1_o <= '1' when reg_pres_s > T1_g else
+                '0';
+  trigger2_o <= '1' when reg_pres_s > T2_g else
+                '0';
 
 end comport;
