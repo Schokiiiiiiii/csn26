@@ -1,15 +1,62 @@
-#--------------------------------------------------------------------------
-#-- HEIG-VD, Haute Ecole d'Ingenerie et de Gestion du Canton de Vaud
-#-- REDS Institute, Reconfigurable Embedded Digital Systems
-#--------------------------------------------------------------------------
-#--
-#-- File                 : maxv_top_pin_assignment.qsf
-#-- Author               : Bertrand Rey
-#-- Date                 : 08.11.2016
-#-- Target Devices       : Altera MAXV 5M570ZF256C5
-#--------------------------------------------------------------------------
-#-- Fichier d'assignation des pins de la carte Max-V 80-25p
-#--------------------------------------------------------------------------
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 1991-2013 Altera Corporation
+# Your use of Altera Corporation's design tools, logic functions 
+# and other software and tools, and its AMPP partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Altera Program License 
+# Subscription Agreement, Altera MegaCore Function License 
+# Agreement, or other applicable license agreement, including, 
+# without limitation, that your use is for the sole purpose of 
+# programming logic devices manufactured by Altera and sold by 
+# Altera or its authorized distributors.  Please refer to the 
+# applicable agreement for further details.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus II 64-Bit
+# Version 13.0.0 Build 156 04/24/2013 SJ Full Version
+# Date created = 21:29:41  September 25, 2014
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#		maxv_top_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
+#		assignment_defaults.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus II software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+
+set_global_assignment -name FAMILY "MAX V"
+set_global_assignment -name DEVICE 5M570ZF256C5
+set_global_assignment -name TOP_LEVEL_ENTITY maxv_top
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 13.0
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "21:29:41  SEPTEMBER 25, 2014"
+set_global_assignment -name LAST_QUARTUS_VERSION "18.1.0 Standard Edition"
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR "-1"
+set_global_assignment -name EDA_SIMULATION_TOOL "QuestaSim (VHDL)"
+set_global_assignment -name EDA_TIME_SCALE "1 ps" -section_id eda_simulation
+set_global_assignment -name EDA_OUTPUT_DATA_FORMAT VHDL -section_id eda_simulation
+set_global_assignment -name RTLV_GROUP_RELATED_NODES OFF
+
+set_global_assignment -name AUTO_RESTART_CONFIGURATION OFF
+set_global_assignment -name USE_CONFIGURATION_DEVICE ON
+set_global_assignment -name RESERVE_ALL_UNUSED_PINS "AS INPUT TRI-STATED"
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"
+set_global_assignment -name RESERVE_ALL_UNUSED_PINS_NO_OUTPUT_GND "AS INPUT TRI-STATED"
+
 
 set_location_assignment PIN_D2 -to nButton_i[1]
 set_location_assignment PIN_D3 -to nButton_i[2]
@@ -182,3 +229,21 @@ set_location_assignment PIN_L13 -to Con_80p_io[76]
 set_location_assignment PIN_M14 -to Con_80p_io[77]
 set_location_assignment PIN_M13 -to Con_80p_io[78]
 set_location_assignment PIN_N14 -to Con_80p_io[79]
+
+set_instance_assignment -name IO_STANDARD "3.3V SCHMITT TRIGGER INPUT" -to Con_80p_io[4]
+set_instance_assignment -name IO_STANDARD "3.3V SCHMITT TRIGGER INPUT" -to Con_80p_io[3]
+set_instance_assignment -name IO_STANDARD "3.3V SCHMITT TRIGGER INPUT" -to Con_80p_io[6]
+
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "NO HEAT SINK WITH STILL AIR"
+set_global_assignment -name VHDL_FILE ../src_vhdl/gen_top_sgn_mot.vhd
+set_global_assignment -name VHDL_FILE ../src_vhdl/cmd_mot_pap.vhd
+set_global_assignment -name VHDL_FILE ../src_vhdl/mot_pap.vhd
+set_global_assignment -name VHDL_FILE ../src_vhdl/gestion_motor.vhd
+set_global_assignment -name VHDL_FILE ../src_vhdl/bit_filter.vhd
+set_global_assignment -name VHDL_FILE ../src_vhdl/capt_filters.vhd
+set_global_assignment -name VHDL_FILE ../src_vhdl/cpt.vhd
+set_global_assignment -name VHDL_FILE ../src_vhdl/MSS.vhd
+set_global_assignment -name VHDL_FILE ../src_vhdl/mot_pap_top.vhd
+set_global_assignment -name VHDL_FILE ../src_cpld/maxv_top.vhd
+set_global_assignment -name SDC_FILE maxv_top.sdc
+set_global_assignment -name SOURCE_FILE maxv_top.qsf

@@ -2,28 +2,24 @@
 -- HEIG-VD, Haute Ecole d'Ingenierie et de Gestion du canton de Vaud
 -- Institut REDS, Reconfigurable & Embedded Digital Systems
 --
--- Fichier      : console_sim.vhd
+-- Fichier      : console_sim_uc.vhd
 --
 -- Description  : Ce fichier permet l'utilisation de la console generique du REDS.
 -- 
--- Auteur       : Gilles Habegger
--- Date         : 20.04.2015
+-- Auteur       : Etienne Messerli
+-- Date         : 17.05.2024
 -- 
 -- Utilise      : -
 -- 
 --| Modifications |------------------------------------------------------------
--- Vers.  Date      Auteur   Description
--- 0.0   20.04.2015  GHR    Premiere version de console_sim
--- 1.0   20.11.2020  EMI    Adaptation pour labo det_clic_dblclic
+-- Ver   Qui   Date         Description
+-- 0.0   EMI   17.05.2024   Version initial
 --  
 -------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
---use ieee.numeric_std.all;
-
-library work;
-    use work.det_clic_dblclic_pkg.all;
+use ieee.numeric_std.all;
 
 entity console_sim is
   port(
@@ -81,56 +77,81 @@ entity console_sim is
     -- seg7_obs(7) -> A
     seg7_obs     : out    std_logic_vector ( 7 downto 0)
   );
+
+-- Declarations
+
 end console_sim ;
 
 architecture struct of console_sim is
-
+  
    -- Internal signal declarations
    signal clk_s  : Std_Logic := '1';  -- clock for the simulation
    constant PERIODE : time := 100 ns;
-
-   component maintien
-    generic (T_HOLD : natural range 1 to 1023 := 2
-            );
-    port (clock_i    : in  std_logic;
-          reset_i    : in  std_logic;
-          pulse_i    : in  std_logic;
-          top_ms_i   : in  std_logic;
-          p_hold_o   : out std_logic
-          );
-   end component;
-   for all : maintien use entity work.maintien;
    
-   signal top_sim_s : std_logic;
-  
+   component cmd_mot_pap
+    port(
+        clk_i       : in  std_logic;
+        rst_i       : in  std_logic;
+        cap_l_i     : in  std_logic;
+        cap_m_i     : in  std_logic;
+        cap_r_i     : in  std_logic;
+        mode_i      : in  std_logic;
+        start_i     : in  std_logic;
+        init_i      : in  std_logic;
+        nb_tour_i   : in  std_logic_vector(2 downto 0);
+        run_l_i     : in  std_logic;
+        run_m_i     : in  std_logic;
+        run_r_i     : in  std_logic;
+        en_l_o      : out std_logic;
+        dir_l_o     : out std_logic;
+        en_m_o      : out std_logic;
+        dir_m_o     : out std_logic;
+        en_r_o      : out std_logic;
+        dir_r_o     : out std_logic;
+        sel_speed_o : out std_logic_vector(1 downto 0);
+        err_o       : out std_logic
+    );
+   end component;
+   for all : cmd_mot_pap use entity work.cmd_mot_pap;
+
+   --signaux interne pour la simulation
+   signal sel_speed_s : std_logic_vector(1 downto 0);
+
 begin
 
   -- Clock generator for the simulation ---------------------------------------
   process
   begin
-        clk_s <= '0', '1' after PERIODE/4, '0' after 3 * PERIODE/4;
-        wait for PERIODE;
+    clk_s <= '0', '1' after PERIODE/4, '0' after 3 * PERIODE/4;
+    wait for PERIODE;
   end process;
 
-  
-  -- top_sim generator for the simulation ---------------------------------------
-  -- generer un signal top_sim ayant un périodicite de 2 * PERIODE 
-  process
-  begin
-     --   top_sim_s <= ' a completer 
-        top_sim_s <= '0', '1' after PERIODE;
-        wait for 2 * PERIODE;
-  end process;
+  -- affichage etat motuer stop via Result_A_obs
+  Result_A_obs(1 downto 0) <= sel_speed_s;
+  Result_A_obs(15 downto 2) <= (others => '0');
 
--- Instanciation du composant a simuler
-  UUT : maintien
-    generic map (T_HOLD => T_HOLD_sim_c)  --valeur definie dans det_clic_dblclic_pkg.vhd
-    port map (clock_i    => clk_s,
-              reset_i    => S15_sti,
-              pulse_i    => S0_sti,
-              top_ms_i   => top_sim_s,
-              p_hold_o   => L0_obs
-    );
+  -- Instance port mappings.
+  UUT : cmd_mot_pap port map (
+        clk_i         => clk_s,
+        rst_i         => S15_sti,
+        cap_l_i       => S7_sti,
+        cap_m_i       => S8_sti,
+        cap_r_i       => S9_sti,
+        mode_i        => S0_sti,
+        start_i       => S1_sti,
+        init_i        => S2_sti,
+        nb_tour_i     => Val_A_sti(2 downto 0),
+        run_l_i       => S3_sti,
+        run_m_i       => S4_sti,
+        run_r_i       => S5_sti,
+        en_l_o        => L0_obs,
+        dir_l_o       => L1_obs,
+        en_m_o        => L2_obs,
+        dir_m_o       => L3_obs,
+        en_r_o        => L4_obs,
+        dir_r_o       => L5_obs,
+        sel_speed_o   => sel_speed_s,
+        err_o         => L6_obs
+        );
 
-  
 end struct;
