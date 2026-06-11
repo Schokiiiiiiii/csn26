@@ -25,14 +25,71 @@ library ieee;
 --| Entity |-------------------------------------------------------------------
 entity UC is
     port(
-        clk_i                 : in  std_logic;
-        rst_i                 : in  std_logic;
-
-
-        -- to be complted
-
-
-
+        -----------------
+        --   Entries   --
+        -----------------
+        -- clock for process
+        clk_i                 	: in  std_logic;
+        -- asynchronous reset
+        rst_i                 	: in  std_logic;
+        -- captors
+	cap_l_i			: in  std_logic;
+	cap_m_i			: in  std_logic;
+	cap_r_i			: in  std_logic;
+	-- mode chosen (1=auto, 0=manual)
+	mode_i			: in  std_logic;
+	-- start for auto sequence
+	start_i			: in  std_logic;
+	-- start for init sequence
+	init_i			: in  std_logic;
+	-- manual mode runs
+	run_l_i			: in  std_logic;
+	run_m_i			: in  std_logic;
+	run_r_i			: in  std_logic;
+	
+        ------------
+        --   UT   --
+        ------------
+	-- speed
+        min_sp_i                : in  std_logic;
+        max_sp_i              	: in  std_logic;
+        -- motors
+        ml_pres_i             	: in  std_logic;
+        mm_pres_i             	: in  std_logic;
+        mr_pres_i               : in  std_logic;
+        -- number of tours
+        tour_in_null_i        	: in  std_logic;
+        zero_tour_i           	: in  std_logic;
+        last_tour_i           	: in  std_logic;
+        mult_tour_i           	: in  std_logic;
+        -- detected a tour (encoche = 5)
+        det_tour_i            	: in  std_logic;
+        
+        -----------------
+        --   OUTPUTS   --
+        -----------------
+        -- error
+        err_o			: out std_logic;
+        -- speed
+        incr_sp_o		: out std_logic;
+        decr_sp_o		: out std_logic;
+        init_sp_o		: out std_logic;
+        -- direction
+        dir_h_o			: out std_logic;
+        dir_a_o			: out std_logic;
+        -- motors
+        dis_ml_o		: out std_logic;
+        en_ml_o			: out std_logic;
+        dis_mm_o		: out std_logic;
+        en_mm_o			: out std_logic;
+        dis_mr_o		: out std_logic;
+        en_mr_o			: out std_logic;
+        -- number of tours
+        init_tour_o		: out std_logic;
+        decr_tour_o		: out std_logic;
+        -- number of encoches
+        init_enc_o		: out std_logic;
+        incr_enc_o		: out std_logic
     );
 end UC;
 
@@ -41,43 +98,95 @@ architecture fsm of UC is
 
     --| Types |----------------------------------------------------------------
     type state_t is (
-        --General state
-        INIT,
-        ....
+        -- General state
+        BEFORE_INIT,
+        BEFORE_AUTO,
 
-        --Init sequence
-        INIT....  ,
-
-
+        -- Init sequence
+        INIT_SP_DIR,
+        INIT_EN_MOT_L,
+        INIT_DIS_MOT_L,
+        INIT_EN_MOT_M,
+        INIT_DIS_MOT_M,
+        INIT_EN_MOT_R,
+        INIT_DIS_MOT_R,
 
         -- Mode Manual
-        MAN_.....,
+        MAN_SP_DIR,
+        MAN_CHK_MODE,
+        MAN_DIS_MOT,
+        MAN_EN_MOT_M,
+        MAN_EN_MOT_LR,
+        MAN_EN_MOT_L,
+        MAN_EN_MOT_R,
 
         -- Mode Automatique
-
-        AUTO_... ,
-
+        AUTO_EN_MOT_M,
+	AUTO_TR_INIT,
+	AUTO_ENC_INIT,
+	AUTO_WT_DOWN,
+	AUTO_ENC_DOWN,
+	AUTO_ENC_UP,
+	AUTO_INCR_SP,
+	AUTO_DECR_SP,
+	AUTO_DECR_TR,
+	AUTO_EN_MOT_L,
+	AUTO_EN_MOT_R,
+	AUTO_DIS_MOT_R,
 
         -- Error
-        ERR
+        EN_ERROR,
+        DIS_ERROR  
     );
-
 
     --| Signals |--------------------------------------------------------------
     -- State machine
-    signal current_state_s   : state_t;
-    signal next_state_s  : state_t;
+    signal current_state_s   	: state_t;
+    signal next_state_s      	: state_t;
 
-    -- internal signals
+    -- Internal signals
+    signal disks_free_s		: std_logic;
+    signal init_possible_s	: std_logic;
+    signal cap_l_free_s		: std_logic;
+    signal cap_m_free_s		: std_logic;
+    signal cap_r_free_s		: std_logic;
+    signal run_m_allowed_s	: std_logic;
+    signal run_l_allowed_s	: std_logic;
+    signal run_r_allowed_s	: std_logic;
+    signal run_forbidden_s	: std_logic;
+    signal right_speed_s	: std_logic;
 
 begin
+    --| Internal signals logic binding |----------------------------------------------------
+    disks_free_s <= '1' when (cap_l_i = '0' and cap_m_i = '0' and cap_r_i = '0') else
+                    '0';
+    
+    init_possible_s <= '1' when (cap_m_i = '0' or (cap_l_i = '0' and cap_r_i = '0')) else
+                       '0';
+    
+    cap_l_free_s <= not cap_l_i;
+    cap_m_free_s <= not cap_m_i;
+    cap_r_free_s <= not cap_r_i;
+    
+    run_m_allowed_s <= (run_m_i and cap_l_free_s and cap_r_free_s);
+    run_l_allowed_s <= (run_l_i and cap_m_free_s);
+    run_r_allowed_s <= (run_r_i and cap_m_free_s);
+    run_forbidden_s <= '1' when (run_m_allowed_s = '0' and
+                                 run_l_allowed_s = '0' and
+                                 run_r_allowed_s = '0') else
+                       '0';
+    
+    right_speed_s <= '1' when (mult_tour_i = '1' and max_sp_i = '1') or
+                              (mult_tour_i = '0' and min_sp_i = '1') else
+                     '0';
+    
 
     --| Update state proc |----------------------------------------------------
     -- This process update the state of the state machine
     fsm_reg : process(clk_i, rst_i) is
     begin
         if(rst_i = '1') then
-            current_state_s <= INIT;
+            current_state_s <= BEFORE_INIT;
         elsif(rising_edge(clk_i)) then
             current_state_s <= next_state_s;
         end if;
@@ -86,22 +195,40 @@ begin
 
     --| Decodeur etats futures et sorties |---------------------------------------------------
     dec_fut_sort : process(current_state_s,
-                                            -- all inputs,  to be complted                    ) is
+                           cap_l_i,
+			   cap_m_i,
+			   cap_r_i,
+			   mode_i,
+			   start_i,
+			   init_i,
+			   run_l_i,
+			   run_m_i,
+			   run_r_i,
+			   min_sp_i,
+			   max_sp_i,
+			   ml_pres_i,
+			   mm_pres_i,
+			   mr_pres_i,
+			   tour_in_null_i,
+			   zero_tour_i,
+			   last_tour_i,
+			   mult_tour_i,
+			   det_tour_i) is
     begin
         -- Default values for generated signal
-        next_state_s       <= INIT;
+        next_state_s       <= BEFORE_INIT;
 
         -- to be complted
         -- all output  <= '0' or '1';  -- selon votre choix de valeur par defaut
 
         case(current_state_s) is
         --| Init |-------------------------------------------------------------
-            when INIT =>
+            when BEFORE_INIT =>
 
                -- to be complted
-               next_state_s <= ....  ;
+               next_state_s <= BEFORE_AUTO;
 
-            when .....  =>
+            when BEFORE_AUTO =>
 
 
         --| Init sequence |----------------------------------------------------
@@ -117,13 +244,13 @@ begin
 
         --| Error |-----------------------------------------------------------
 
-            when ERR =>
+            when EN_ERROR =>
 
 
         --| For others state |-------------------------------------------------
             when others =>
                -- others signals at default value
-               next_state_s <= ....  ;
+               next_state_s <= BEFORE_INIT;
 
         end case;
     end process dec_fut_sort;
