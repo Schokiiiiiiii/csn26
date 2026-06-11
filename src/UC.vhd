@@ -216,19 +216,52 @@ begin
 			   det_tour_i) is
     begin
         -- Default values for generated signal
-        next_state_s       <= BEFORE_INIT;
-
-        -- to be complted
-        -- all output  <= '0' or '1';  -- selon votre choix de valeur par defaut
+        next_state_s    <= BEFORE_INIT;
+        err_o		<= '0';
+        incr_sp_o	<= '0';
+        decr_sp_o	<= '0';
+        init_sp_o	<= '0';
+        dir_h_o		<= '0';
+        dir_a_o		<= '0';
+        dis_ml_o	<= '0';
+        en_ml_o		<= '0';
+        dis_mm_o	<= '0';
+        en_mm_o		<= '0';
+        dis_mr_o	<= '0';
+        en_mr_o		<= '0';
+        init_tour_o	<= '0';
+        decr_tour_o	<= '0';
+        init_enc_o	<= '0';
+        incr_enc_o	<= '0';
 
         case(current_state_s) is
         --| Init |-------------------------------------------------------------
             when BEFORE_INIT =>
-
-               -- to be complted
-               next_state_s <= BEFORE_AUTO;
+	        dis_ml_o <= '1';
+	        dis_mm_o <= '1';
+                dis_mr_o <= '1';
+                
+                if (init_possible_s = '1') then
+                    next_state_s <= INIT_SP_DIR;
+                else
+                    next_state_s <= EN_ERROR;
+                end if;
 
             when BEFORE_AUTO =>
+                dis_ml_o <= '1';
+	        dis_mm_o <= '1';
+                dis_mr_o <= '1';
+                
+                if (start_i = '1' and disks_free_s = '1') then
+                    next_state_s <= INIT_SP_DIR;
+                elsif (start_i = '0' and init_i = '1') or
+                      (start_i = '1' and disks_free_s = '0') then
+                    next_state_s <= BEFORE_INIT;
+                elsif (start_i = '0' and init_i = '0' and mode_i = '0') then
+                    next_state_s <= MAN_SP_DIR;
+                else
+                    next_state_s <= BEFORE_AUTO;
+                end if;
 
 
         --| Init sequence |----------------------------------------------------
