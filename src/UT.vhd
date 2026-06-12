@@ -29,7 +29,7 @@ entity UT is
     port(
         clk_i                 : in  std_logic;
         rst_i                 : in  std_logic;
-        nb_tour_i             : in  std_logic_vector(3 downto 0);
+        nb_tour_i             : in  std_logic_vector(2 downto 0);
 
         --Commande from UC
         incr_sp_i             : in  std_logic;
