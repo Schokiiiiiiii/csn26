@@ -127,16 +127,17 @@ architecture fsm of UC is
 	AUTO_WT_DOWN,
 	AUTO_ENC_DOWN,
 	AUTO_ENC_UP,
+	AUTO_CHK_TOUR,
 	AUTO_INCR_SP,
 	AUTO_DECR_SP,
 	AUTO_DECR_TR,
+	AUTO_CHK_END,
 	AUTO_EN_MOT_L,
 	AUTO_EN_MOT_R,
 	AUTO_DIS_MOT_R,
 
         -- Error
-        EN_ERROR,
-        DIS_ERROR  
+        ERR
     );
 
     --| Signals |--------------------------------------------------------------
@@ -244,46 +245,317 @@ begin
                 if (init_possible_s = '1') then
                     next_state_s <= INIT_SP_DIR;
                 else
-                    next_state_s <= EN_ERROR;
+                    next_state_s <= ERR;
                 end if;
 
             when BEFORE_AUTO =>
-                dis_ml_o <= '1';
+	        dis_ml_o <= '1';
 	        dis_mm_o <= '1';
-                dis_mr_o <= '1';
+	        dis_mr_o <= '1';
+
+	        if (start_i = '1') then
+	        
+	            if (disks_free_s = '1') then
+	            
+	                if (tour_in_null_i = '0') then -- can start auto mode
+	                    next_state_s <= AUTO_EN_MOT_M; 
+	                else 
+	                    if (init_possible_s = '1') then -- no turns, go back to init loop
+	                        next_state_s <= INIT_SP_DIR;
+	                    else -- -- no turns, cannot init, go to error
+	                        next_state_s <= ERR;
+	                    end if;
+	                end if;
+
+		    else -- disks not free, go to before init
+		        next_state_s <= BEFORE_INIT; 
+		    end if;
+		    
+	        elsif (init_i = '1') then -- init requested, go to before init
+		    next_state_s <= BEFORE_INIT;
+	        elsif (mode_i = '0') then -- changed mode, go to manual
+		    next_state_s <= MAN_SP_DIR;
+	        else -- still in auto, stay in before auto
+		    next_state_s <= BEFORE_AUTO;
+	        end if;
+
+
+        --| Init sequence |----------------------------------------------------
+            when INIT_SP_DIR =>
+                dir_a_o <= '1';
+                init_sp_o <= '1';
                 
-                if (start_i = '1' and disks_free_s = '1') then
-                    next_state_s <= INIT_SP_DIR;
-                elsif (start_i = '0' and init_i = '1') or
-                      (start_i = '1' and disks_free_s = '0') then
-                    next_state_s <= BEFORE_INIT;
-                elsif (start_i = '0' and init_i = '0' and mode_i = '0') then
+                if (cap_l_i = '1') then
+                    next_state_s <= INIT_EN_MOT_L;
+                elsif (cap_m_i = '1') then
+                    next_state_s <= INIT_EN_MOT_M;
+                elsif (cap_r_i = '1') then
+                    next_state_s <= INIT_EN_MOT_R;
+                elsif (init_i = '0' and mode_i = '0') then -- all motors init done
                     next_state_s <= MAN_SP_DIR;
                 else
                     next_state_s <= BEFORE_AUTO;
                 end if;
-
-
-        --| Init sequence |----------------------------------------------------
-
-
+                    
+            when INIT_EN_MOT_L =>
+                en_ml_o <= '1';
+                
+                if (cap_l_i = '0') then
+                    next_state_s <= INIT_DIS_MOT_L;
+                else
+                    next_state_s <= INIT_EN_MOT_L;
+                end if;
+                
+            when INIT_DIS_MOT_L =>
+                dis_ml_o <= '1';
+                
+                if (cap_m_i = '1') then
+                    next_state_s <= INIT_EN_MOT_M;
+                elsif (cap_r_i = '1') then
+                    next_state_s <= INIT_EN_MOT_R;
+                elsif (init_i = '0' and mode_i = '0') then -- all motors init done
+                    next_state_s <= MAN_SP_DIR;
+                else
+                    next_state_s <= BEFORE_AUTO;
+                end if;
+                
+            when INIT_EN_MOT_M =>
+                en_mm_o <= '1';
+                
+                if (cap_m_i = '0') then
+                    next_state_s <= INIT_DIS_MOT_M;
+                else
+                    next_state_s <= INIT_EN_MOT_M;
+                end if;
+                
+            when INIT_DIS_MOT_M => 
+                dis_mm_o <= '1';
+                
+                if (cap_r_i = '1') then
+                    next_state_s <= INIT_EN_MOT_R;
+                elsif (init_i = '0' and mode_i = '0') then -- all motors init done
+                    next_state_s <= MAN_SP_DIR;
+                else
+                    next_state_s <= BEFORE_AUTO;
+                end if;
+                
+            when INIT_EN_MOT_R =>
+                en_mr_o <= '1';
+                
+                if (cap_r_i = '0') then -- hole detected
+                    next_state_s <= INIT_DIS_MOT_R; 
+                else -- disk detected / maintain
+                    next_state_s <= INIT_EN_MOT_R; 
+                end if;
+                
+            when INIT_DIS_MOT_R =>
+                dis_mr_o <= '1';
+                
+                if (init_i = '0' and mode_i = '0') then -- all motors init done
+                    next_state_s <= MAN_SP_DIR;
+                else
+                    next_state_s <= BEFORE_AUTO;
+                end if;
+                
 
         --| Manual sequence |--------------------------------------------------
-
-
+            when MAN_SP_DIR =>
+                dir_a_o <= '1';
+                init_sp_o <= '1';
+                
+                next_state_s <= MAN_CHK_MODE; -- always go to main decision node for MAN
+                
+            when MAN_CHK_MODE =>
+            
+                if (mode_i = '1' and init_possible_s = '1') then -- go into init because auto
+                    next_state_s <= INIT_SP_DIR;
+                elsif (mode_i = '1' and init_possible_s = '0') then -- got into error because auto
+                    next_state_s <= ERR;
+                elsif (run_l_allowed_s = '1' and run_r_allowed_s = '1') then -- left/right
+                    next_state_s <= MAN_EN_MOT_LR;
+                elsif (run_l_allowed_s = '1') then -- left
+                    next_state_s <= MAN_EN_MOT_L;
+                elsif (run_m_allowed_s = '1') then -- middle
+                    next_state_s <= MAN_EN_MOT_M;
+                elsif (run_r_allowed_s = '1') then -- right
+                    next_state_s <= MAN_EN_MOT_R;
+                else -- no change of mode and nothing allowed
+                    next_state_s <= MAN_DIS_MOT;
+                end if;
+                    
+	    when MAN_EN_MOT_LR =>
+	        en_ml_o  <= '1';
+	        dis_mm_o <= '1';
+	        en_mr_o  <= '1';
+	        
+	        next_state_s <= MAN_CHK_MODE;
+	        
+	    when MAN_EN_MOT_L =>
+	        en_ml_o  <= '1';
+	        dis_mm_o <= '1';
+	        dis_mr_o <= '1';
+	        
+	        next_state_s <= MAN_CHK_MODE;
+	        
+	    when MAN_EN_MOT_M =>
+	        dis_ml_o <= '1';
+	        en_mm_o  <= '1';
+	        dis_mr_o <= '1';
+	        
+	        next_state_s <= MAN_CHK_MODE;
+	        
+	    when MAN_EN_MOT_R =>
+	        dis_ml_o <= '1';
+	        dis_mm_o <= '1';
+	        en_mr_o  <= '1';
+	        
+	        next_state_s <= MAN_CHK_MODE;
+	        
+	    when MAN_DIS_MOT =>
+	        dis_ml_o <= '1';
+	        dis_mm_o <= '1';
+	        dis_mr_o <= '1';
+	        
+	        next_state_s <= MAN_CHK_MODE;
 
         --| Automatic sequence |-----------------------------------------------
-
+            when AUTO_EN_MOT_M =>
+                dir_h_o <= '1';
+                init_sp_o <= '1';
+                en_mm_o <= '1';
+                
+                next_state_s <= AUTO_TR_INIT;
+                
+            when AUTO_TR_INIT =>
+                init_tour_o <= '1';
+                
+                next_state_s <= AUTO_ENC_INIT;
+                
+            when AUTO_ENC_INIT =>
+                init_enc_o <= '1';
+                
+                next_state_s <= AUTO_WT_DOWN;
+                
+            when AUTO_WT_DOWN =>
+                
+                if (disks_free_s = '0') then -- once disks are not free -> left encoche
+                    next_state_s <= AUTO_ENC_DOWN;
+                else -- wait to leave current encoche
+                    next_state_s <= AUTO_WT_DOWN;
+                end if;
+                
+            when AUTO_ENC_DOWN => 
+                
+                if (disks_free_s = '1') then -- once disks are free again -> new encoche
+                    next_state_s <= AUTO_ENC_UP;
+                else -- wait to detect new encoche
+                    next_state_s <= AUTO_ENC_DOWN;
+                end if;
+                
+            when AUTO_ENC_UP => -- necessary to give one clock to update enc
+                incr_enc_o <= '1';
+            
+                next_state_s <= AUTO_CHK_TOUR;
+                
+            when AUTO_CHK_TOUR =>
+                
+                if (det_tour_i = '1') then -- -- check if we finished a tour
+                    next_state_s <= AUTO_DECR_TR; 
+                elsif (mult_tour_i = '1' and max_sp_i = '0') then -- increase speed
+                    next_state_s <= AUTO_INCR_SP;
+                elsif (mult_tour_i = '0' and min_sp_i = '0') then -- decrease speed
+                    next_state_s <= AUTO_DECR_SP;
+                else
+                    next_state_s <= AUTO_WT_DOWN;
+                end if;
+                
+            when AUTO_INCR_SP =>
+                incr_sp_o <= '1';
+                
+                next_state_s <= AUTO_WT_DOWN;
+                
+            when AUTO_DECR_SP =>
+                decr_sp_o <= '1';
+                
+                next_state_s <= AUTO_WT_DOWN;
+                
+            when AUTO_DECR_TR =>
+                decr_tour_o <= '1';
+                
+                next_state_s <= AUTO_CHK_END;
+                
+            when AUTO_CHK_END =>
+            
+                if (zero_tour_i = '1') then
+                    if (mm_pres_i = '1' and disks_free_s = '1') then
+                        next_state_s <= AUTO_EN_MOT_L;
+                    elsif (ml_pres_i = '1' and disks_free_s = '1') then 
+                        next_state_s <= AUTO_EN_MOT_R;
+                    elsif (mm_pres_i = '0' and ml_pres_i = '0') then 
+                        next_state_s <= AUTO_DIS_MOT_R;
+                    else
+                        next_state_s <= ERR;
+                    end if;
+                else
+                    next_state_s <= AUTO_ENC_INIT;
+                end if;
+                
+            when AUTO_EN_MOT_L =>
+                dis_mm_o <= '1';
+                dir_a_o <= '1';
+                en_ml_o <= '1';
+                
+                next_state_s <= AUTO_TR_INIT;
+                
+            when AUTO_EN_MOT_R =>
+                dis_ml_o <= '1';
+                dir_h_o <= '1';
+                en_mr_o <= '1';
+                
+                next_state_s <= AUTO_TR_INIT;
+                
+            when AUTO_DIS_MOT_R =>
+                dis_mr_o <= '1';
+                
+                if (init_possible_s = '1') then
+                    next_state_s <= INIT_SP_DIR;
+                else
+                    next_state_s <= ERR;
+                end if;
 
         --| Error |-----------------------------------------------------------
-
-            when EN_ERROR =>
-
+            when ERR =>
+                dis_ml_o <= '1';
+                dis_mm_o <= '1';
+                dis_mr_o <= '1';
+                err_o <= '1';
+                
+                if (init_i = '1' and init_possible_s = '1') then
+                    next_state_s <= INIT_SP_DIR;
+                else
+                    next_state_s <= ERR;
+                end if;
 
         --| For others state |-------------------------------------------------
             when others =>
-               -- others signals at default value
-               next_state_s <= BEFORE_INIT;
+                -- others signals at default value
+                next_state_s <= BEFORE_INIT;
+		err_o		<= '0';
+		incr_sp_o	<= '0';
+		decr_sp_o	<= '0';
+		init_sp_o	<= '0';
+		dir_h_o		<= '0';
+		dir_a_o		<= '0';
+		dis_ml_o	<= '0';
+		en_ml_o		<= '0';
+		dis_mm_o	<= '0';
+		en_mm_o		<= '0';
+		dis_mr_o	<= '0';
+		en_mr_o		<= '0';
+		init_tour_o	<= '0';
+		decr_tour_o	<= '0';
+		init_enc_o	<= '0';
+		incr_enc_o	<= '0';
 
         end case;
     end process dec_fut_sort;
