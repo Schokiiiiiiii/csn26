@@ -113,9 +113,9 @@
             <mxPoint x="540" y="490" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="dn5FqVjSTAi3m2bi3MJt-36" value="&lt;font style=&quot;font-size: 10px;&quot;&gt;start = 1&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 10px;&quot;&gt;mode = 1&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 10px;&quot;&gt;disks_free = 1&lt;/font&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="dn5FqVjSTAi3m2bi3MJt-29" vertex="1" connectable="0">
+        <mxCell id="dn5FqVjSTAi3m2bi3MJt-36" value="&lt;span style=&quot;font-size: 10px;&quot;&gt;start = 1&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;disks_free = 1&lt;/span&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="dn5FqVjSTAi3m2bi3MJt-29" vertex="1" connectable="0">
           <mxGeometry x="0.0095" y="2" relative="1" as="geometry">
-            <mxPoint x="38" as="offset" />
+            <mxPoint x="-2" y="-5" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="dn5FqVjSTAi3m2bi3MJt-30" value="" style="curved=1;endArrow=classic;html=1;rounded=0;" parent="1" source="dn5FqVjSTAi3m2bi3MJt-12" target="dn5FqVjSTAi3m2bi3MJt-18" edge="1">
@@ -143,9 +143,9 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="dn5FqVjSTAi3m2bi3MJt-35" value="&lt;font style=&quot;font-size: 10px;&quot;&gt;start = 0&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 10px;&quot;&gt;mode = 1&lt;/font&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="dn5FqVjSTAi3m2bi3MJt-34" vertex="1" connectable="0">
+        <mxCell id="dn5FqVjSTAi3m2bi3MJt-35" value="&lt;span style=&quot;font-size: 10px;&quot;&gt;start = 0&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;init = 0&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;mode = 1&lt;/span&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="dn5FqVjSTAi3m2bi3MJt-34" vertex="1" connectable="0">
           <mxGeometry x="0.0577" y="4" relative="1" as="geometry">
-            <mxPoint x="27" y="-27" as="offset" />
+            <mxPoint x="7" y="-27" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="dn5FqVjSTAi3m2bi3MJt-37" value="" style="curved=1;endArrow=classic;html=1;rounded=0;" parent="1" source="dn5FqVjSTAi3m2bi3MJt-25" target="dn5FqVjSTAi3m2bi3MJt-18" edge="1">
@@ -157,7 +157,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="dn5FqVjSTAi3m2bi3MJt-38" value="&lt;font style=&quot;font-size: 10px;&quot;&gt;mode = 0&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="dn5FqVjSTAi3m2bi3MJt-37" vertex="1" connectable="0">
+        <mxCell id="dn5FqVjSTAi3m2bi3MJt-38" value="&lt;font style=&quot;font-size: 10px;&quot;&gt;start = 0&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 10px;&quot;&gt;init = 0&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;mode = 0&lt;/span&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="dn5FqVjSTAi3m2bi3MJt-37" vertex="1" connectable="0">
           <mxGeometry x="0.1118" y="-10" relative="1" as="geometry">
             <mxPoint x="-2" y="-18" as="offset" />
           </mxGeometry>
@@ -171,9 +171,9 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="dn5FqVjSTAi3m2bi3MJt-40" value="&lt;font style=&quot;font-size: 10px;&quot;&gt;start = 1&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 10px;&quot;&gt;mode = 1&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 10px;&quot;&gt;disks_free = 0&lt;/font&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="dn5FqVjSTAi3m2bi3MJt-39" vertex="1" connectable="0">
+        <mxCell id="dn5FqVjSTAi3m2bi3MJt-40" value="&lt;font style=&quot;font-size: 10px;&quot;&gt;(start = 1 and disks_free = 0) or&amp;nbsp;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 10px;&quot;&gt;(start = 0 and init = 1)&lt;/font&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="dn5FqVjSTAi3m2bi3MJt-39" vertex="1" connectable="0">
           <mxGeometry x="-0.1726" y="24" relative="1" as="geometry">
-            <mxPoint x="36" y="-13" as="offset" />
+            <mxPoint x="26" y="-13" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="dn5FqVjSTAi3m2bi3MJt-41" value="&lt;font style=&quot;font-size: 10px;&quot;&gt;disks_free =&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;(cap_l = 0 and cap_m = 0 and cap_r = 0)&lt;/span&gt;&lt;/font&gt;&lt;div style=&quot;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;font style=&quot;font-size: 10px;&quot;&gt;init_possible = (cap_m = 0 or (cap_l = 0 and cap_r = 0))&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;fillColor=#97FFC4;" parent="1" vertex="1">
@@ -199,7 +199,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="dn5FqVjSTAi3m2bi3MJt-48" value="&lt;div style=&quot;line-height: 90%;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;line-height: 70%;&quot;&gt;&lt;font style=&quot;line-height: 90%;&quot;&gt;&lt;font style=&quot;font-size: 8px;&quot;&gt;ENABLE_ERROR&lt;/font&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;line-height: 70%;&quot;&gt;&lt;span style=&quot;font-size: 8px;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;div&gt;&lt;span&gt;&lt;font style=&quot;font-size: 6px; line-height: 70%;&quot;&gt;dis_ml = 1&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;font style=&quot;font-size: 6px; line-height: 70%;&quot;&gt;dis_mm = 1&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;font style=&quot;font-size: 6px; line-height: 70%;&quot;&gt;dis_mr = 1&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 6px;&quot;&gt;err = 1&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
+        <mxCell id="dn5FqVjSTAi3m2bi3MJt-48" value="&lt;div style=&quot;line-height: 90%;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;line-height: 70%;&quot;&gt;&lt;font style=&quot;line-height: 90%;&quot;&gt;&lt;font style=&quot;font-size: 8px;&quot;&gt;EN_ERROR&lt;/font&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;line-height: 70%;&quot;&gt;&lt;span style=&quot;font-size: 8px;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;div&gt;&lt;span&gt;&lt;font style=&quot;font-size: 6px; line-height: 70%;&quot;&gt;dis_ml = 1&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;font style=&quot;font-size: 6px; line-height: 70%;&quot;&gt;dis_mm = 1&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;font style=&quot;font-size: 6px; line-height: 70%;&quot;&gt;dis_mr = 1&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 6px;&quot;&gt;err = 1&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
           <mxGeometry x="80" y="290" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="dn5FqVjSTAi3m2bi3MJt-49" value="" style="endArrow=none;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="dn5FqVjSTAi3m2bi3MJt-48" target="dn5FqVjSTAi3m2bi3MJt-48" edge="1">
