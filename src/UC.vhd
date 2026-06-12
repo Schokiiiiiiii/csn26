@@ -214,7 +214,18 @@ begin
 			   zero_tour_i,
 			   last_tour_i,
 			   mult_tour_i,
-			   det_tour_i) is
+			   det_tour_i,
+			   disks_free_s,
+                           init_possible_s,
+                           cap_l_free_s,
+                           cap_m_free_s,
+                           cap_r_free_s,
+                           run_m_allowed_s,
+                           run_l_allowed_s,
+                           run_r_allowed_s,
+                           auto_l_running_s,
+                           auto_m_running_s,
+                           auto_r_running_s) is
     begin
         -- Default values for generated signal
         next_state_s    <= BEFORE_INIT;
@@ -367,7 +378,7 @@ begin
                 
             when MAN_CHK_MODE =>
             
-                if (mode_i = '1') then -- selected auto mode
+                if (mode_i = '1' or init_i = '1') then -- selected auto mode
                 
                     if (init_possible_s = '1') then -- go into init
                         next_state_s <= INIT_SP_DIR;
