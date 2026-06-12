@@ -154,7 +154,6 @@ architecture fsm of UC is
     signal run_m_allowed_s	: std_logic;
     signal run_l_allowed_s	: std_logic;
     signal run_r_allowed_s	: std_logic;
-    signal run_forbidden_s	: std_logic;
     signal right_speed_s	: std_logic;
 
 begin
@@ -172,10 +171,6 @@ begin
     run_m_allowed_s <= (run_m_i and cap_l_free_s and cap_r_free_s);
     run_l_allowed_s <= (run_l_i and cap_m_free_s);
     run_r_allowed_s <= (run_r_i and cap_m_free_s);
-    run_forbidden_s <= '1' when (run_m_allowed_s = '0' and
-                                 run_l_allowed_s = '0' and
-                                 run_r_allowed_s = '0') else
-                       '0';
     
     right_speed_s <= '1' when (mult_tour_i = '1' and max_sp_i = '1') or
                               (mult_tour_i = '0' and min_sp_i = '1') else
@@ -367,18 +362,38 @@ begin
                 
             when MAN_CHK_MODE =>
             
-                if (mode_i = '1' and init_possible_s = '1') then -- go into init because auto
-                    next_state_s <= INIT_SP_DIR;
-                elsif (mode_i = '1' and init_possible_s = '0') then -- got into error because auto
-                    next_state_s <= ERR;
-                elsif (run_l_allowed_s = '1' and run_r_allowed_s = '1') then -- left/right
+                if (mode_i = '1') then -- selected auto mode
+                
+                    if (init_possible_s = '1') then -- go into init
+                        next_state_s <= INIT_SP_DIR;
+                    else -- got into error
+                        next_state_s <= ERR;
+                    end if;	
+                    
+                elsif (run_l_allowed_s = '1' and
+                       run_m_allowed_s = '0' and
+                       run_r_allowed_s = '1') then -- left/right
+                       
                     next_state_s <= MAN_EN_MOT_LR;
-                elsif (run_l_allowed_s = '1') then -- left
+                    
+                elsif (run_l_allowed_s = '1' and
+                       run_m_allowed_s = '0' and
+                       run_r_allowed_s = '0') then -- left
+                       
                     next_state_s <= MAN_EN_MOT_L;
-                elsif (run_m_allowed_s = '1') then -- middle
+                    
+                elsif (run_l_allowed_s = '0' and
+                       run_m_allowed_s = '1' and
+                       run_r_allowed_s = '0') then -- middle
+                
                     next_state_s <= MAN_EN_MOT_M;
-                elsif (run_r_allowed_s = '1') then -- right
+                    
+                elsif (run_l_allowed_s = '0' and
+                       run_m_allowed_s = '0' and
+                       run_r_allowed_s = '1') then -- right
+                
                     next_state_s <= MAN_EN_MOT_R;
+                    
                 else -- no change of mode and nothing allowed
                     next_state_s <= MAN_DIS_MOT;
                 end if;
