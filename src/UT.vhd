@@ -102,14 +102,14 @@ architecture behave of UT is
 begin
 
     -- early check
-    tour_in_null_o <= '1' when tour_pres_s = "000" else '0';
+    tour_in_null_o <= '1' when nb_tour_i = "000" else '0';
 
     ---------------
     --   Speed   --
     ---------------
 
     -- decodeur etats futur
-    sp_fut_s <= (others =>'0')  when init_sp_i = '1' else
+    sp_fut_s <= (others =>'0')   when init_sp_i = '1' else
                 sp_pres_s + 1    when incr_sp_i = '1' else
                 sp_pres_s - 1    when decr_sp_i = '1' else
                 sp_pres_s;
@@ -159,7 +159,7 @@ begin
 
     -- decodeur etats futur
     enc_fut_s <= (others =>'0')    when init_enc_i = '1' else
-                  enc_pres_s - 1    when incr_enc_i = '1' else
+                  enc_pres_s + 1    when incr_enc_i = '1' else
                   enc_pres_s;
 
     -- registre interne
