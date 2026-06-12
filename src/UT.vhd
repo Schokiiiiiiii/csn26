@@ -134,8 +134,8 @@ begin
     --------------
 
     -- decodeur etats futur
-    tour_fut_s <= (others =>'0')    when init_tour_i = '1' else
-                  tour_pres_s - 1    when decr_tour_i = '1' else
+    tour_fut_s <= unsigned(nb_tour_i)   when init_tour_i = '1' else
+                  tour_pres_s - 1       when decr_tour_i = '1' else
                   tour_pres_s;
 
     -- registre interne
