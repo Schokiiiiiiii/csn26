@@ -99,6 +99,7 @@ architecture fsm of UC is
     --| Types |----------------------------------------------------------------
     type state_t is (
         -- General state
+        RST,
         BEFORE_INIT,
         BEFORE_AUTO,
 
@@ -163,16 +164,22 @@ begin
     disks_free_s <= '1' when (cap_l_i = '0' and cap_m_i = '0' and cap_r_i = '0') else
                     '0';
     
-    init_possible_s <= '1' when (cap_m_i = '0' or (cap_l_i = '0' and cap_r_i = '0')) else
+    init_possible_s <= '1' when (cap_m_free_s = '1' or (cap_l_free_s = '1' and cap_r_free_s = '1')) else
                        '0';
     
     cap_l_free_s <= not cap_l_i;
     cap_m_free_s <= not cap_m_i;
     cap_r_free_s <= not cap_r_i;
     
-    run_m_allowed_s <= (run_m_i and cap_l_free_s and cap_r_free_s);
-    run_l_allowed_s <= (run_l_i and cap_m_free_s);
-    run_r_allowed_s <= (run_r_i and cap_m_free_s);
+    run_m_allowed_s <= '1' when (run_m_i = '1' and run_l_i = '0' and run_r_i = '0') and
+                                (cap_l_free_s = '1' and cap_r_free_s = '1') else
+                       '0';
+    run_l_allowed_s <= '1' when (run_l_i = '1' and run_m_i = '0') and
+                                (cap_m_free_s = '1') else
+                       '0';
+    run_r_allowed_s <= '1' when (run_r_i = '1' and run_m_i = '0') and 
+                                (cap_m_free_s = '1') else
+                       '0';
     
     auto_l_running_s <= '1' when (ml_pres_i = '1' and mm_pres_i = '0' and mr_pres_i = '0') else
                         '0';
@@ -187,7 +194,7 @@ begin
     fsm_reg : process(clk_i, rst_i) is
     begin
         if(rst_i = '1') then
-            current_state_s <= BEFORE_INIT;
+            current_state_s <= RST;
         elsif(rising_edge(clk_i)) then
             current_state_s <= next_state_s;
         end if;
@@ -228,7 +235,7 @@ begin
                            auto_r_running_s) is
     begin
         -- Default values for generated signal
-        next_state_s    <= BEFORE_INIT;
+        next_state_s    <= RST;
         err_o		<= '0';
         incr_sp_o	<= '0';
         decr_sp_o	<= '0';
@@ -248,6 +255,10 @@ begin
 
         case(current_state_s) is
         --| Init |-------------------------------------------------------------
+            when RST =>
+            
+                next_state_s <= BEFORE_INIT;
+        
             when BEFORE_INIT =>
 	        dis_ml_o <= '1';
 	        dis_mm_o <= '1';
@@ -570,7 +581,7 @@ begin
         --| For others state |-------------------------------------------------
             when others =>
                 -- others signals at default value
-                next_state_s <= BEFORE_INIT;
+                next_state_s <= RST;
 		err_o		<= '0';
 		incr_sp_o	<= '0';
 		decr_sp_o	<= '0';
