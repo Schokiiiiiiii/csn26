@@ -245,8 +245,8 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="pN81GvMpXEb3ej54dVg0-53" value="&lt;span style=&quot;font-size: 10px;&quot;&gt;run_m_allowed = (run_m and cap_l_free and cap_r_free)&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;run_l_allowed = (run_l and cap_m_free)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;run_r_allowed = (run_r and cap_m_free)&lt;br&gt;&lt;/span&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;fillColor=#97FFC4;" parent="1" vertex="1">
-          <mxGeometry x="315" y="30" width="385" height="50" as="geometry" />
+        <mxCell id="pN81GvMpXEb3ej54dVg0-53" value="&lt;span style=&quot;font-size: 10px;&quot;&gt;run_m_allowed = (run_m = 1 and run_l = 0 and run_r = 0) and&amp;nbsp;&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;(cap_l_free = 1 and cap_r_free = 1)&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;run_l_allowed = (run_l = 1 and run_m = 0 and cap_m_free = 1)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;run_r_allowed = (run_r =1 and run_m = 0 and cap_m_free = 1)&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;fillColor=#97FFC4;" parent="1" vertex="1">
+          <mxGeometry x="315" y="35" width="295" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
