@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.5 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36">
   <diagram name="Page-1" id="wPL0ykucIR90BcmbkjXx">
-    <mxGraphModel dx="2096" dy="217" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2622" dy="525" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -461,7 +461,7 @@
             <mxPoint x="-80" y="700" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="UakJHf_Q9J1fo_hfmFcD-2" parent="1" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" value="Mode manuel" vertex="1">
+        <mxCell id="UakJHf_Q9J1fo_hfmFcD-2" parent="1" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" value="Mode manuel et pas init" vertex="1">
           <mxGeometry height="40" width="160" x="-650" y="281.04" as="geometry" />
         </mxCell>
         <mxCell id="UakJHf_Q9J1fo_hfmFcD-4" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;" value="">
@@ -489,7 +489,7 @@
             <mxPoint x="-8" y="-7" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="UakJHf_Q9J1fo_hfmFcD-9" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=light-dark(#97ffc4, #005312);align=left;spacingRight=0;spacingLeft=2;" value="&lt;div&gt;UC: Test mode = 0&lt;/div&gt;&lt;div&gt;UT: -&lt;/div&gt;" vertex="1">
+        <mxCell id="UakJHf_Q9J1fo_hfmFcD-9" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=light-dark(#97ffc4, #005312);align=left;spacingRight=0;spacingLeft=2;" value="&lt;div&gt;UC: Test mode = 0&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;and&lt;/span&gt;&amp;nbsp;init = 0&lt;/div&gt;&lt;div&gt;UT: -&lt;/div&gt;" vertex="1">
           <mxGeometry height="50" width="130" x="-800" y="190" as="geometry" />
         </mxCell>
         <mxCell id="UakJHf_Q9J1fo_hfmFcD-11" edge="1" parent="1" source="UakJHf_Q9J1fo_hfmFcD-9" style="endArrow=none;dashed=1;html=1;rounded=0;exitX=1;exitY=0.75;exitDx=0;exitDy=0;" value="">
