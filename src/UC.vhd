@@ -154,7 +154,9 @@ architecture fsm of UC is
     signal run_m_allowed_s	: std_logic;
     signal run_l_allowed_s	: std_logic;
     signal run_r_allowed_s	: std_logic;
-    signal right_speed_s	: std_logic;
+    signal auto_l_running_s 	: std_logic;
+    signal auto_m_running_s	: std_logic;
+    signal auto_r_running_s	: std_logic;
 
 begin
     --| Internal signals logic binding |----------------------------------------------------
@@ -172,9 +174,12 @@ begin
     run_l_allowed_s <= (run_l_i and cap_m_free_s);
     run_r_allowed_s <= (run_r_i and cap_m_free_s);
     
-    right_speed_s <= '1' when (mult_tour_i = '1' and max_sp_i = '1') or
-                              (mult_tour_i = '0' and min_sp_i = '1') else
-                     '0';
+    auto_l_running_s <= '1' when (ml_pres_i = '1' and mm_pres_i = '0' and mr_pres_i = '0') else
+                        '0';
+    auto_m_running_s <= '1' when (ml_pres_i = '0' and mm_pres_i = '1' and mr_pres_i = '0') else
+                        '0';
+    auto_r_running_s <= '1' when (ml_pres_i = '0' and mm_pres_i = '0' and mr_pres_i = '1') else
+                        '0';
     
 
     --| Update state proc |----------------------------------------------------
@@ -502,11 +507,11 @@ begin
             when AUTO_CHK_END =>
             
                 if (zero_tour_i = '1') then
-                    if (mm_pres_i = '1' and disks_free_s = '1') then
+                    if (disks_free_s = '1' and auto_m_running_s = '1') then
                         next_state_s <= AUTO_EN_MOT_L;
-                    elsif (ml_pres_i = '1' and disks_free_s = '1') then 
+                    elsif (disks_free_s = '1' and auto_l_running_s = '1') then 
                         next_state_s <= AUTO_EN_MOT_R;
-                    elsif (mm_pres_i = '0' and ml_pres_i = '0') then 
+                    elsif (disks_free_s = '1' and auto_r_running_s = '1') then 
                         next_state_s <= AUTO_DIS_MOT_R;
                     else
                         next_state_s <= ERR;
