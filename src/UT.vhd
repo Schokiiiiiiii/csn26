@@ -110,9 +110,9 @@ begin
 
     -- decodeur etats futur
     sp_fut_s <= (others =>'0')  when init_sp_i = '1' else
-                sp_fut_s + 1    when incr_sp_i = '1' else
-                sp_fut_s - 1    when decr_sp_i = '1' else
-                sp_fut_s;
+                sp_pres_s + 1    when incr_sp_i = '1' else
+                sp_pres_s - 1    when decr_sp_i = '1' else
+                sp_pres_s;
 
     -- registre interne
     process(clk_i, rst_i)
@@ -135,8 +135,8 @@ begin
 
     -- decodeur etats futur
     tour_fut_s <= (others =>'0')    when init_tour_i = '1' else
-                  tour_fut_s - 1    when decr_tour_i = '1' else
-                  tour_fut_s;
+                  tour_pres_s - 1    when decr_tour_i = '1' else
+                  tour_pres_s;
 
     -- registre interne
     process(clk_i, rst_i)
@@ -159,8 +159,8 @@ begin
 
     -- decodeur etats futur
     enc_fut_s <= (others =>'0')    when init_enc_i = '1' else
-                  enc_fut_s - 1    when incr_enc_i = '1' else
-                  enc_fut_s;
+                  enc_pres_s - 1    when incr_enc_i = '1' else
+                  enc_pres_s;
 
     -- registre interne
     process(clk_i, rst_i)
@@ -182,13 +182,13 @@ begin
     -- decodeur etats futur
     dir_fut_s <= '0' when dir_a_i = '1' else
                  '1' when dir_h_i = '1' else
-                 dir_fut_s;
+                 dir_pres_s;
     
     -- registre interne
     process(clk_i, rst_i)
     begin
         if rst_i = '1' then
-            dir_fut_s <= '0';
+            dir_pres_s <= '0';
         elsif Rising_Edge(clk_i) then
             dir_pres_s <= dir_fut_s;
         end if;
@@ -201,13 +201,13 @@ begin
     -- decodeur etats futur
     ml_fut_s <= '0' when dis_ml_i = '1' else
                 '1' when en_ml_i = '1' else
-                ml_fut_s;
+                ml_pres_s;
     
     -- registre interne
     process(clk_i, rst_i)
     begin
         if rst_i = '1' then
-            ml_fut_s <= '0';
+            ml_pres_s <= '0';
         elsif Rising_Edge(clk_i) then
             ml_pres_s <= ml_fut_s;
         end if;
@@ -225,13 +225,13 @@ begin
     -- decodeur etats futur
     mm_fut_s <= '0' when dis_mm_i = '1' else
                 '1' when en_mm_i = '1' else
-                mm_fut_s;
+                mm_pres_s;
     
     -- registre interne
     process(clk_i, rst_i)
     begin
         if rst_i = '1' then
-            mm_fut_s <= '0';
+            mm_pres_s <= '0';
         elsif Rising_Edge(clk_i) then
             mm_pres_s <= mm_fut_s;
         end if;
@@ -249,13 +249,13 @@ begin
     -- decodeur etats futur
     mr_fut_s <= '0' when dis_mr_i = '1' else
                 '1' when en_mr_i = '1' else
-                mr_fut_s;
+                mr_pres_s;
     
     -- registre interne
     process(clk_i, rst_i)
     begin
         if rst_i = '1' then
-            mr_fut_s <= '0';
+            mr_pres_s <= '0';
         elsif Rising_Edge(clk_i) then
             mr_pres_s <= mr_fut_s;
         end if;
