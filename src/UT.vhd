@@ -6,15 +6,15 @@
 --
 -- Description  : UT pour la commande des 3 moteurs pas-a-pas
 --
--- Auteur       : ....
--- Date         : 21.05.2024
+-- Auteur       : Arnaut LEYRE
+-- Date         : 12.06.2026
 -- Version      : 1.0
 --
 -- Utilise dans : Labo moteur pas-à-pas (MSS cplx)
 --
 --| Modifications |------------------------------------------------------------
--- Version   Auteur      Date               Description
---
+-- Version   Auteur         Date               Description
+-- 1.0       Arnaut LEYRE   12.06.2026         UT pour la commande des 3 moteurs pas-a-pas
 --
 -------------------------------------------------------------------------------
 
@@ -96,8 +96,7 @@ architecture behave of UT is
 
     --| Components |-----------------------------------------------------------
 
-    -- to be completed
-
+    -- no need
 
 begin
 
