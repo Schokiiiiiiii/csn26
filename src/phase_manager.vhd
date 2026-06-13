@@ -7,16 +7,15 @@
 -- Description  : Manage the bridge input of a bipolar stepper motor with a
 --                state machine
 --
--- Auteur       : Arnaut LEYRE
--- Date         : 12.06.2026
--- Version      : 2.0
+-- Auteur       : L. Fournier
+-- Date         : 11.07.2022
+-- Version      : 1.0
 --
 -- Utilise dans : Moteur pas-à-pas
 --
 --| Modifications |------------------------------------------------------------
--- Version   Auteur         Date               Description
--- 1.0       LFR            11.07.2022         First version.
--- 2.0       Arnaut LEYRE   12.06.2026         Manage the bridge input of a bipolar stepper motor with a state machine
+-- Version   Auteur      Date               Description
+-- 1.0       LFR         see header         First version.
 -------------------------------------------------------------------------------
 
 --| Library |------------------------------------------------------------------

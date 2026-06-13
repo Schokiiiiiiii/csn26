@@ -4,19 +4,19 @@
 --
 -- Fichier      : cmd_mot_pap.vhd
 --
--- Description  :
+-- Description  : Connexion UT/UC
 --
--- Auteur       : L. Fournier
--- Date         : 06.09.2022
--- Version      : 1.0
+-- Auteur       : Arnaut LEYRE
+-- Date         : 12.06.2026
+-- Version      : 3.0
 --
 -- Utilise dans : Labo moteur pas-à-pas
 --
 --| Modifications |------------------------------------------------------------
--- Version   Auteur      Date               Description
--- 1.0       LFR         06.09.2022         First version.
--- 2.0       LFR         16.02.2024         2024 version for SysLog2 (MSS cplx)
---
+-- Version   Auteur         Date               Description
+-- 1.0       LFR            06.09.2022         First version.
+-- 2.0       LFR            16.02.2024         2024 version for SysLog2 (MSS cplx)
+-- 3.0       Arnaut LEYRE   12.06.2026         Connexion UT/UC
 -------------------------------------------------------------------------------
 
 --| Library |------------------------------------------------------------------
