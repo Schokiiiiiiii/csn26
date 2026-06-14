@@ -88,52 +88,74 @@ architecture struct of console_sim is
    signal clk_s  : Std_Logic := '1';  -- clock for the simulation
    constant PERIODE : time := 100 ns;
    
-   component UC
+      component UC
     port(
-        clk_i                 : in  std_logic;
-        rst_i                 : in  std_logic;
-        cap_l_i               : in  std_logic;
-        cap_m_i               : in  std_logic;
-        cap_r_i               : in  std_logic;
-        mode_i                : in  std_logic;
-        start_i               : in  std_logic;
-        init_i                : in  std_logic;
-        run_l_i               : in  std_logic;
-        run_m_i               : in  std_logic;
-        run_r_i               : in  std_logic;
-        cpt_encoche_eq_zero_i : in  std_logic;
-        cpt_tour_eq_zero_i    : in  std_logic;
-        cpt_disk_eq_m_i       : in  std_logic;
-        cpt_disk_eq_l_i       : in  std_logic;
-        cpt_disk_eq_r_i       : in  std_logic;
-        decr_cpt_encoche_o    : out std_logic;
-        decr_cpt_tour_o       : out std_logic;
-        decr_cpt_disk_o       : out std_logic;
-        load_cpt_encoche_o    : out std_logic;
-        load_cpt_tour_o       : out std_logic;
-        load_cpt_disk_o       : out std_logic;
-        nSpeed_cst_o          : out std_logic;
-        set_l_o               : out std_logic;
-        set_m_o               : out std_logic;
-        set_r_o               : out std_logic;
-        stop_l_o              : out std_logic;
-        stop_m_o              : out std_logic;
-        stop_r_o              : out std_logic;
-        status_l_i            : in  std_logic;
-        status_m_i            : in  std_logic;
-        status_r_i            : in  std_logic;
-        err_o                 : out std_logic
+        clk_i          : in  std_logic;
+        rst_i          : in  std_logic;
+
+        cap_l_i        : in  std_logic;
+        cap_m_i        : in  std_logic;
+        cap_r_i        : in  std_logic;
+
+        mode_i         : in  std_logic;
+        start_i        : in  std_logic;
+        init_i         : in  std_logic;
+
+        run_l_i        : in  std_logic;
+        run_m_i        : in  std_logic;
+        run_r_i        : in  std_logic;
+
+        min_sp_i       : in  std_logic;
+        max_sp_i       : in  std_logic;
+
+        ml_pres_i      : in  std_logic;
+        mm_pres_i      : in  std_logic;
+        mr_pres_i      : in  std_logic;
+
+        tour_in_null_i : in  std_logic;
+        zero_tour_i    : in  std_logic;
+        last_tour_i    : in  std_logic;
+        mult_tour_i    : in  std_logic;
+        det_tour_i     : in  std_logic;
+
+        err_o          : out std_logic;
+
+        incr_sp_o      : out std_logic;
+        decr_sp_o      : out std_logic;
+        init_sp_o      : out std_logic;
+
+        dir_h_o        : out std_logic;
+        dir_a_o        : out std_logic;
+
+        dis_ml_o       : out std_logic;
+        en_ml_o        : out std_logic;
+        dis_mm_o       : out std_logic;
+        en_mm_o        : out std_logic;
+        dis_mr_o       : out std_logic;
+        en_mr_o        : out std_logic;
+
+        init_tour_o    : out std_logic;
+        decr_tour_o    : out std_logic;
+
+        init_enc_o     : out std_logic;
+        incr_enc_o     : out std_logic
     );
    end component;
    for all : UC use entity work.UC;
 
    --signaux interne pour la simulation
-   signal status_l_s : std_logic;
-   signal status_m_s : std_logic;
-   signal status_r_s : std_logic;
-   signal stop_l_s   : std_logic;
-   signal stop_m_s   : std_logic;
-   signal stop_r_s   : std_logic;
+   signal min_sp_s       : std_logic;
+   signal max_sp_s       : std_logic;
+
+   signal ml_pres_s      : std_logic;
+   signal mm_pres_s      : std_logic;
+   signal mr_pres_s      : std_logic;
+
+   signal tour_in_null_s : std_logic;
+   signal zero_tour_s    : std_logic;
+   signal last_tour_s    : std_logic;
+   signal mult_tour_s    : std_logic;
+   signal det_tour_s     : std_logic;
 
 begin
 
@@ -144,50 +166,73 @@ begin
     wait for PERIODE;
   end process;
 
-  -- stimuli signaux statut via Val_A
-  status_l_s <= Val_A_sti(0);
-  status_m_s <= Val_A_sti(1);
-  status_r_s <= Val_A_sti(2);
-  -- affichage etat motuer stop via Result_A_obs
-  Result_A_obs(0) <= stop_l_s;
-  Result_A_obs(1) <= stop_m_s;
-  Result_A_obs(2) <= stop_r_s;
-  Result_A_obs(15 downto 3) <= (others => '0');
+    -- Stimuli simulant les retours de l'UT via Val_A
+  	min_sp_s       <= Val_A_sti(0);
+  	max_sp_s       <= Val_A_sti(1);
+
+  	ml_pres_s      <= Val_A_sti(2);
+  	mm_pres_s      <= Val_A_sti(3);
+  	mr_pres_s      <= Val_A_sti(4);
+
+  	tour_in_null_s <= Val_A_sti(5);
+  	zero_tour_s    <= Val_A_sti(6);
+  	last_tour_s    <= Val_A_sti(7);
+  	mult_tour_s    <= Val_A_sti(8);
+  	det_tour_s     <= Val_A_sti(9);
+
+  	Result_A_obs <= Val_A_sti;
 
   -- Instance port mappings.
   UUT : UC port map (
-        clk_i                 => clk_s,
-        rst_i                 => S15_sti,
-        cap_l_i               => S6_sti,
-        cap_m_i               => S7_sti,
-        cap_r_i               => S8_sti,
-        mode_i                => S0_sti,
-        start_i               => S1_sti,
-        init_i                => S2_sti,
-        run_l_i               => S3_sti,
-        run_m_i               => S4_sti,
-        run_r_i               => S5_sti,
-        cpt_encoche_eq_zero_i => S9_sti,
-        cpt_tour_eq_zero_i    => S10_sti,
-        cpt_disk_eq_m_i       => S11_sti,
-        cpt_disk_eq_l_i       => S12_sti,
-        cpt_disk_eq_r_i       => S13_sti,
-        decr_cpt_encoche_o    => L0_obs,
-        decr_cpt_tour_o       => L1_obs,
-        decr_cpt_disk_o       => L2_obs,
-        load_cpt_encoche_o    => L3_obs,
-        load_cpt_tour_o       => L4_obs,
-        load_cpt_disk_o       => L5_obs,
-        nSpeed_cst_o          => L6_obs,
-        set_l_o               => L10_obs,
-        set_m_o               => L12_obs,
-        set_r_o               => L13_obs,
-        stop_l_o              => stop_l_s,
-        stop_m_o              => stop_m_s,
-        stop_r_o              => stop_r_s,
-        status_l_i            => status_l_s,
-        status_m_i            => status_m_s,
-        status_r_i            => status_r_s,
-        err_o                 => L15_obs    );
+        clk_i          => clk_s,
+        rst_i          => S15_sti,
+
+        -- Entrées utilisateur / capteurs
+        mode_i         => S0_sti,
+        start_i        => S1_sti,
+        init_i         => S2_sti,
+        run_l_i        => S3_sti,
+        run_m_i        => S4_sti,
+        run_r_i        => S5_sti,
+
+        cap_l_i        => S6_sti,
+        cap_m_i        => S7_sti,
+        cap_r_i        => S8_sti,
+
+        -- Retours de l'UT
+        min_sp_i       => min_sp_s,
+        max_sp_i       => max_sp_s,
+        ml_pres_i      => ml_pres_s,
+        mm_pres_i      => mm_pres_s,
+        mr_pres_i      => mr_pres_s,
+        tour_in_null_i => tour_in_null_s,
+        zero_tour_i    => zero_tour_s,
+        last_tour_i    => last_tour_s,
+        mult_tour_i    => mult_tour_s,
+        det_tour_i     => det_tour_s,
+
+        -- Sorties UC
+        incr_sp_o      => L0_obs,
+        decr_sp_o      => L1_obs,
+        init_sp_o      => L2_obs,
+
+        dir_h_o        => L3_obs,
+        dir_a_o        => L4_obs,
+
+        en_ml_o        => L5_obs,
+        dis_ml_o       => L6_obs,
+        en_mm_o        => L7_obs,
+        dis_mm_o       => L8_obs,
+        en_mr_o        => L9_obs,
+        dis_mr_o       => L10_obs,
+
+        init_tour_o    => L11_obs,
+        decr_tour_o    => L12_obs,
+
+        init_enc_o     => L13_obs,
+        incr_enc_o     => L14_obs,
+
+        err_o          => L15_obs
+  );
 
 end struct;

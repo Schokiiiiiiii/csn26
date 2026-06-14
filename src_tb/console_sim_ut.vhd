@@ -90,84 +90,121 @@ architecture struct of console_sim is
    
    component UT
     port(
-        clk_i                 : in  std_logic;
-        rst_i                 : in  std_logic;
-        nb_tour_i             : in  std_logic_vector(2 downto 0);
-        set_l_i               : in  std_logic;
-        set_m_i               : in  std_logic;
-        set_r_i               : in  std_logic;
-        stop_l_i              : in  std_logic;
-        stop_m_i              : in  std_logic;
-        stop_r_i              : in  std_logic;
-        nSpeed_cst_i          : in  std_logic;
-        decr_cpt_encoche_i    : in  std_logic;
-        decr_cpt_tour_i       : in  std_logic;
-        decr_cpt_disk_i       : in  std_logic;
-        load_cpt_encoche_i    : in  std_logic;
-        load_cpt_tour_i       : in  std_logic;
-        load_cpt_disk_i       : in  std_logic;
-        cpt_encoche_eq_zero_o : out std_logic;
-        cpt_tour_eq_zero_o    : out std_logic;
-        cpt_disk_eq_m_o       : out std_logic;
-        cpt_disk_eq_l_o       : out std_logic;
-        cpt_disk_eq_r_o       : out std_logic;
-        en_l_o                : out std_logic;
-        dir_l_o               : out std_logic;
-        en_m_o                : out std_logic;
-        dir_m_o               : out std_logic;
-        en_r_o                : out std_logic;
-        dir_r_o               : out std_logic;
-        sel_speed_o           : out std_logic_vector(1 downto 0)
+        clk_i          : in  std_logic;
+        rst_i          : in  std_logic;
+        nb_tour_i      : in  std_logic_vector(2 downto 0);
+
+        incr_sp_i      : in  std_logic;
+        decr_sp_i      : in  std_logic;
+        init_sp_i      : in  std_logic;
+        dir_h_i        : in  std_logic;
+        dir_a_i        : in  std_logic;
+
+        dis_ml_i       : in  std_logic;
+        en_ml_i        : in  std_logic;
+        dis_mm_i       : in  std_logic;
+        en_mm_i        : in  std_logic;
+        dis_mr_i       : in  std_logic;
+        en_mr_i        : in  std_logic;
+
+        init_tour_i    : in  std_logic;
+        decr_tour_i    : in  std_logic;
+        init_enc_i     : in  std_logic;
+        incr_enc_i     : in  std_logic;
+
+        en_l_o         : out std_logic;
+        en_m_o         : out std_logic;
+        en_r_o         : out std_logic;
+        dir_l_o        : out std_logic;
+        dir_m_o        : out std_logic;
+        dir_r_o        : out std_logic;
+        sel_speed_o    : out std_logic_vector(1 downto 0);
+
+        min_sp_o       : out std_logic;
+        max_sp_o       : out std_logic;
+        ml_pres_o      : out std_logic;
+        mm_pres_o      : out std_logic;
+        mr_pres_o      : out std_logic;
+        tour_in_null_o : out std_logic;
+        zero_tour_o    : out std_logic;
+        last_tour_o    : out std_logic;
+        mult_tour_o    : out std_logic;
+        det_tour_o     : out std_logic
     );
    end component;
    for all : UT use entity work.UT;
 
-   --signaux interne pour la simulation
    signal sel_speed_s : std_logic_vector(1 downto 0);
 
 begin
 
-  -- Clock generator for the simulation ---------------------------------------
   process
   begin
     clk_s <= '0', '1' after PERIODE/4, '0' after 3 * PERIODE/4;
     wait for PERIODE;
   end process;
 
-  -- affichage etat motuer stop via Result_A_obs
-  Result_A_obs(1 downto 0) <= sel_speed_s;
+  -- Affichage vitesse sur Result_A
+  Result_A_obs(1 downto 0)  <= sel_speed_s;
   Result_A_obs(15 downto 2) <= (others => '0');
 
+  -- Affichages non utilisés
+  Hex0_obs <= (others => '0');
+  Hex1_obs <= (others => '0');
+  Result_B_obs <= (others => '0');
+  seg7_obs <= (others => '0');
+
   -- Instance port mappings.
-  UUT : UT port map (
-        clk_i                   => clk_s,
-        rst_i                   => S15_sti,
-        nb_tour_i               => Val_A_sti(2 downto 0),
-        set_l_i                 => S0_sti,
-        set_m_i                 => S1_sti,
-        set_r_i                 => S2_sti,
-        stop_l_i                => S3_sti,
-        stop_m_i                => S4_sti,
-        stop_r_i                => S5_sti,
-        nSpeed_cst_i            => S6_sti,
-        decr_cpt_encoche_i      => S7_sti,
-        decr_cpt_tour_i         => S8_sti,
-        decr_cpt_disk_i         => S9_sti,
-        load_cpt_encoche_i      => S10_sti,
-        load_cpt_tour_i         => S11_sti,
-        load_cpt_disk_i         => S12_sti,
-        cpt_encoche_eq_zero_o   => L0_obs,
-        cpt_tour_eq_zero_o      => L1_obs,
-        cpt_disk_eq_m_o         => L2_obs,
-        cpt_disk_eq_l_o         => L3_obs,
-        cpt_disk_eq_r_o         => L4_obs,
-        en_l_o                  => L5_obs,
-        dir_l_o                 => L6_obs,
-        en_m_o                  => L7_obs,
-        dir_m_o                 => L8_obs,
-        en_r_o                  => L9_obs,
-        dir_r_o                 => L10_obs,
-        sel_speed_o             => sel_speed_s
-        );
+UUT : UT port map (
+        clk_i          => clk_s,
+        rst_i          => S15_sti,
+        nb_tour_i      => Val_A_sti(2 downto 0),
+
+        -- Commandes vitesse
+        init_sp_i      => S0_sti,
+        incr_sp_i      => S1_sti,
+        decr_sp_i      => S2_sti,
+
+        -- Commandes direction
+        dir_a_i        => S3_sti,
+        dir_h_i        => S4_sti,
+
+        -- Commandes moteurs
+        en_ml_i        => S5_sti,
+        dis_ml_i       => S6_sti,
+        en_mm_i        => S7_sti,
+        dis_mm_i       => S8_sti,
+        en_mr_i        => S9_sti,
+        dis_mr_i       => S10_sti,
+
+        -- Commandes compteurs
+        init_tour_i    => S11_sti,
+        decr_tour_i    => S12_sti,
+        init_enc_i     => S13_sti,
+        incr_enc_i     => S14_sti,
+
+        -- Sorties moteurs
+        en_l_o         => L0_obs,
+        dir_l_o        => L1_obs,
+        en_m_o         => L2_obs,
+        dir_m_o        => L3_obs,
+        en_r_o         => L4_obs,
+        dir_r_o        => L5_obs,
+
+        -- Sortie vitesse
+        sel_speed_o    => sel_speed_s,
+
+        -- Sorties vers UC / observation
+        min_sp_o       => L6_obs,
+        max_sp_o       => L7_obs,
+        ml_pres_o      => L8_obs,
+        mm_pres_o      => L9_obs,
+        mr_pres_o      => L10_obs,
+        tour_in_null_o => L11_obs,
+        zero_tour_o    => L12_obs,
+        last_tour_o    => L13_obs,
+        mult_tour_o    => L14_obs,
+        det_tour_o     => L15_obs
+  );
 
 end struct;
