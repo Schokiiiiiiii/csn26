@@ -13,9 +13,9 @@
 # Utilise      : Labo CSN/SysLog2, commande de 3 moteurs pas-a-pas
 #
 #--| Modifications |--------------------------------------------------------
-# Ver  Aut.  Date        Description
-# 0.0  EMI  13.03.2013   Version originale
-#                         
+# Ver  Aut.     Date        Description
+# 0.0  EMI      13.03.2013   Version originale
+# 1.0  ALE,FLR  13.06.2026   Version fonctionel                     
 ############################################################################
 #create library work        
 vlib work

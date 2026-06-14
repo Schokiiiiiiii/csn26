@@ -12,9 +12,9 @@
 -- Utilise      : -
 -- 
 --| Modifications |------------------------------------------------------------
--- Ver   Qui   Date         Description
--- 0.0   EMI   17.05.2024   Version initial
---  
+-- Ver   Qui    Date         Description
+-- 0.0   EMI    17.05.2024   Version initial
+-- 1.0  ALE,FLR 13.06.2026   Version fonctionel  
 -------------------------------------------------------------------------------
 
 library ieee;
